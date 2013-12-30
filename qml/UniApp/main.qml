@@ -21,6 +21,7 @@ ApplicationWindow {
             }
         }
     }
+
     //side menu
     Rectangle
     {
@@ -29,13 +30,12 @@ ApplicationWindow {
         color: "#303030";
         ListView
         {
+            id:menu_listView
             anchors.topMargin:50
             anchors.left:parent.left
             anchors.right:parent.right
             anchors.bottom:parent.bottom
             anchors.top:parent.top
-
-
 
             focus:show_menu.x==0? false:true
             highlightFollowsCurrentItem: false
@@ -45,6 +45,7 @@ ApplicationWindow {
                 height:120
                 width:applicationWindow1.width/2
                 id: menu_delegate
+                property variant myData: model
                 Text
                 {
                     anchors.verticalCenter: parent.verticalCenter
@@ -75,7 +76,7 @@ ApplicationWindow {
             id: menu_items
             ListElement
             {
-                name: "main"
+                name: "Termine"
                 fileName: "StartWindow.qml"
             }
             ListElement
@@ -100,10 +101,46 @@ ApplicationWindow {
     {
         id:main_view
         anchors.fill:parent
+        //toolbar with button to open menu
+        Rectangle
+        {
+            id:toolbar
+            anchors.top:parent.top;
+            anchors.left: parent.left;
+            anchors.right:parent.right;
+            height:75
+            color:"black";
+            Image
+            {
+                anchors.top:parent.top;
+                anchors.left:parent.left;
+                anchors.bottom: parent.bottom;
+                source: "to_menu.png"
+                MouseArea
+                {
+                    anchors.fill:parent
+                    onClicked:
+                    {
+                        triggerMenu();
+                    }
+                }
+            }
+            Label
+            {
+                id:toolbarLabel
+                anchors.horizontalCenter: parent.horizontalCenter;
+                anchors.verticalCenter: parent.verticalCenter;
+                text:menu_listView.currentItem.myData.name;
+                color:"white"
+            }
+        }
 
         //load the selected window
         Loader
-        {   anchors.fill: parent
+        {   anchors.top:toolbar.bottom;
+            anchors.left: parent.left;
+            anchors.right:parent.right;
+            anchors.bottom: parent.bottom;
             id: pageLoader
             source: "StartWindow.qml"
         }
