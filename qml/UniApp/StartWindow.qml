@@ -7,7 +7,7 @@ Rectangle
     ListView
     {
         anchors.fill:parent;
-        model:5;
+        model:15;
         anchors.margins: 20
         delegate: Item
         {
@@ -17,12 +17,21 @@ Rectangle
             {
                 width: parent.width
                 height:130
+                radius:15;
                 color: "white"
-                Text
+                Rectangle
                 {
                     id:timeDescr
-                    font.bold: true;
-                    text:"von xxx bis yyy:"
+                    width:parent.width;
+                    height:50
+
+                    color:"lightgray"
+                    Text
+                    {
+
+                        font.bold: true;
+                        text:"von xxx bis yyy:"
+                    }
                 }
 
                 Text
