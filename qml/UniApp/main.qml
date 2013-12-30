@@ -21,42 +21,53 @@ ApplicationWindow {
             }
         }
     }
-
+    //side menu
     Rectangle
     {
         id: menu_view
         anchors.fill:parent
-        color:"black"
-
+        color: "#303030";
         ListView
         {
-            anchors.fill: parent
+            anchors.topMargin:50
+            anchors.left:parent.left
+            anchors.right:parent.right
+            anchors.bottom:parent.bottom
+            anchors.top:parent.top
 
-            Component
+
+
+            focus:show_menu.x==0? false:true
+            highlightFollowsCurrentItem: false
+            model: menu_items
+            delegate: Item
             {
+                height:120
+                width:applicationWindow1.width/2
                 id: menu_delegate
-                Item
+                Text
                 {
-                    height:150
-                    width:parent.width
-                    Rectangle
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left:parent.left
+                    anchors.leftMargin:20
+                    text:name
+                    font.bold: true
+                    color:parent.ListView.isCurrentItem ? "red" : "white"
+                }
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked:
                     {
-                        height:80
-                        width:applicationWindow1.width/2
-                        radius:15
-                        color: ListView.isCurrentItem ? "gray" : "red"
-                        Text
+                        if(parent.ListView.view.currentIndex !== index)
                         {
-                            anchors.verticalCenter: parent
-                            text:name
-                            color:"white"
+                            parent.ListView.view.currentIndex = index;
+                            pageLoader.setSource(fileName);
                         }
                     }
                 }
+                Rectangle { height: 2; width: parent.width * 0.9; color: "gray"; anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom } }
             }
-            focus:true
-            delegate: menu_delegate
-            model: menu_items
         }
 
         ListModel
@@ -65,45 +76,37 @@ ApplicationWindow {
             ListElement
             {
                 name: "main"
+                fileName: "StartWindow.qml"
             }
             ListElement
             {
                 name: "Stundenplan"
+                fileName: "Timetable.qml"
             }
             ListElement
             {
                 name: "Mensa"
+                fileName: "StartWindow.qml"
+            }
+            ListElement
+            {
+                name: "Einstellungen"
+                fileName: "Settings.qml"
             }
         }
     }
-
+    //main window
     Rectangle
     {
         id:main_view
         anchors.fill:parent
 
-        Button {
-            text: "Log goes "
-            anchors.centerIn: parent
-            onClicked:
-            {
-                log.text=applicationWindow1.height+"x"+applicationWindow1.width;
-            }
+        //load the selected window
+        Loader
+        {   anchors.fill: parent
+            id: pageLoader
+            source: "StartWindow.qml"
         }
-
-        TextField {
-            id: log
-            height: 133
-            readOnly: true
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            placeholderText: qsTr("Text Field")
-        }
-
 
         // show menu animation
         transform: Translate
