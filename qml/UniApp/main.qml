@@ -22,7 +22,7 @@ ApplicationWindow {
         }
     }
 
-    //side menu
+//-----------------------begin side menu-----------------------
     Rectangle
     {
         id: menu_view
@@ -31,26 +31,19 @@ ApplicationWindow {
         ListView
         {
             id:menu_listView
-            anchors.topMargin:50
-            anchors.left:parent.left
-            anchors.right:parent.right
-            anchors.bottom:parent.bottom
-            anchors.top:parent.top
-
+            anchors {topMargin:50; left:parent.left; right:parent.right; bottom:parent.bottom; top:parent.top;}
             focus:show_menu.x==0? false:true
             highlightFollowsCurrentItem: false
             model: menu_items
             delegate: Item
             {
+                property variant myData: model
+
                 height:120
                 width:applicationWindow1.width/2
-                id: menu_delegate
-                property variant myData: model
                 Text
                 {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left:parent.left
-                    anchors.leftMargin:20
+                    anchors {verticalCenter: parent.verticalCenter; left:parent.left; leftMargin:20;}
                     text:name
                     font.bold: true
                     color:parent.ListView.isCurrentItem ? "red" : "white"
@@ -62,7 +55,7 @@ ApplicationWindow {
                     {
                         if(parent.ListView.view.currentIndex !== index)
                         {
-                            parent.ListView.view.currentIndex = index;
+                            menu_listView.currentIndex = index;
                             pageLoader.setSource(fileName);
                         }
                     }
@@ -96,6 +89,8 @@ ApplicationWindow {
             }
         }
     }
+//-----------------------end side menu-----------------------
+
     //main window
     Rectangle
     {
@@ -105,31 +100,22 @@ ApplicationWindow {
         Rectangle
         {
             id:toolbar
-            anchors.top:parent.top;
-            anchors.left: parent.left;
-            anchors.right:parent.right;
+            anchors {top:parent.top; left: parent.left; right:parent.right;}
             height:75
             color:"black";
             Image
             {
-                anchors.top:parent.top;
-                anchors.left:parent.left;
-                anchors.bottom: parent.bottom;
+                anchors {top:parent.top; left:parent.left; bottom: parent.bottom;}
                 source: "to_menu.png"
                 MouseArea
                 {
                     anchors.fill:parent
-                    onClicked:
-                    {
-                        triggerMenu();
-                    }
+                    onClicked:triggerMenu();
                 }
             }
             Label
             {
-                id:toolbarLabel
-                anchors.horizontalCenter: parent.horizontalCenter;
-                anchors.verticalCenter: parent.verticalCenter;
+                anchors {horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter;}
                 text:menu_listView.currentItem.myData.name;
                 color:"white"
             }
@@ -137,11 +123,9 @@ ApplicationWindow {
 
         //load the selected window
         Loader
-        {   anchors.top:toolbar.bottom;
-            anchors.left: parent.left;
-            anchors.right:parent.right;
-            anchors.bottom: parent.bottom;
+        {
             id: pageLoader
+            anchors {top:toolbar.bottom; left: parent.left; right:parent.right; bottom: parent.bottom;}
             source: "StartWindow.qml"
         }
 
