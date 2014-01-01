@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/UniApp/main.qml</file>
+        <file>qml/UniApp/Settings.qml</file>
+        <file>qml/UniApp/StartWindow.qml</file>
+        <file>qml/UniApp/Timetable.qml</file>
+        <file>qml/UniApp/to_menu.png</file>
+    </qresource>
+</RCC>

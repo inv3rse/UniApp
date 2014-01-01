@@ -6,6 +6,8 @@ DEPLOYMENTFOLDERS = folder_01
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
+QT += network
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     stineclient.cpp
@@ -17,7 +19,8 @@ SOURCES += main.cpp \
 include(qtquick2controlsapplicationviewer/qtquick2controlsapplicationviewer.pri)
 qtcAddDeployment()
 
-RESOURCES +=
+RESOURCES += \
+    qmlData.qrc
 
 HEADERS += \
     stineclient.h

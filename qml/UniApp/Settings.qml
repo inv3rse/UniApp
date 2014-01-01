@@ -3,29 +3,38 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.1
 
 Rectangle {
-    id: settingsWindow
-    color:"red"
+    id: settingsWindow;
+    color:"red";
 
     Column {
-        width: implicitWidth
-        height: implicitHeight
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        spacing: 50
+        id: someId;
+        width: implicitWidth;
+        height: implicitHeight;
+        anchors.horizontalCenter: parent.horizontalCenter;
+        anchors.verticalCenter: parent.verticalCenter;
+        spacing: 50;
 
         TextField {
-            placeholderText: qsTr("Benutzername")
-            width: settingsWindow.width/2
+            id:username;
+            placeholderText: qsTr("Benutzername");
+            width: settingsWindow.width/2;
         }
 
         TextField {
-            placeholderText: qsTr("Passwort")
-            width: settingsWindow.width/2
-            echoMode: TextInput.PasswordEchoOnEdit
+            id:password;
+            placeholderText: qsTr("Passwort");
+            width: settingsWindow.width/2;
+            echoMode: TextInput.PasswordEchoOnEdit;
         }
 
         Button {
-            text: qsTr("hole Daten")
+            text: qsTr("hole Daten");
+            onClicked: Client.getSession(username.text,password.text);
         }
+    }
+
+    TextField {
+        text: Client.Log;
+        anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
     }
 }
