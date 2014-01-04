@@ -9,6 +9,8 @@
 #include <QAuthenticator>
 #include <QUrl>
 #include <QByteArray>
+#include <QList>
+#include <QSslError>
 
 class StineClient : public QObject
 {
@@ -28,11 +30,12 @@ signals:
 
 public slots:
     void replyFinished(QNetworkReply *Reply);
+    void sslErrorOccured(QNetworkReply * Reply, const QList<QSslError> & Errors);
 
 private:
     QString _debugLog;
     QString _session;
-    const QUrl _targetUrl{"http://www.stine.uni-hamburg.de/scripts/mgrqispi.dll"};
+    const QUrl _targetUrl{QStringLiteral("https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll")};
     QNetworkAccessManager _networkManager;
 
 };
