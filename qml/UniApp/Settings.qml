@@ -10,8 +10,8 @@ Rectangle {
         id: someId;
         width: implicitWidth;
         height: implicitHeight;
+        anchors.top: parent.top;
         anchors.horizontalCenter: parent.horizontalCenter;
-        anchors.verticalCenter: parent.verticalCenter;
         spacing: 50;
 
         TextField {
@@ -33,7 +33,7 @@ Rectangle {
         }
     }
 
-    TextField {
+    TextArea {
         text: Client.Log;
         anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
     }

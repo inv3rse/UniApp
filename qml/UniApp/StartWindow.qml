@@ -3,11 +3,11 @@ import QtQuick 2.0
 Rectangle
 {
     id:startWindow
-    color:"blue"
+    color:"red"
     ListView
     {
         anchors.fill:parent;
-        model:15;
+        model:5;
         anchors.margins: 20
         delegate: Item
         {

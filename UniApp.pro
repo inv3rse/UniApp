@@ -24,3 +24,9 @@ RESOURCES += \
 
 HEADERS += \
     stineclient.h
+
+ANDROID_EXTRA_LIBS = ../../openssl-1.0.1f/libcrypto.so ../../openssl-1.0.1f/libssl.so
+
+OTHER_FILES += \
+    android/libs/armeabi-v7a/libcrypto.so \
+    android/libs/armeabi-v7a/libssl.so

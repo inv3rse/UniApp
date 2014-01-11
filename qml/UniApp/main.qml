@@ -23,11 +23,36 @@ ApplicationWindow {
         }
     }
 
+//---------toolbar with button to open menu----------------
+    Rectangle
+    {
+        id:toolbar
+        anchors {top:parent.top; left: parent.left; right:parent.right;}
+        height:75
+        color:"black";
+        Image
+        {
+            anchors {top:parent.top; left:parent.left; bottom: parent.bottom;}
+            source: "to_menu.png"
+            MouseArea
+            {
+                anchors.fill:parent
+                onClicked:triggerMenu();
+            }
+        }
+        Label
+        {
+            anchors {horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter;}
+            text:menu_listView.currentItem.myData.name;
+            color:"white"
+        }
+    }
+
 //-----------------------begin side menu-----------------------
     Rectangle
     {
         id: menu_view
-        anchors.fill:parent
+        anchors {left:parent.left; bottom:parent.bottom; right:parent.right; top: toolbar.bottom;}
         color: "#303030";
         ListView
         {
@@ -96,37 +121,13 @@ ApplicationWindow {
     Rectangle
     {
         id:main_view
-        anchors.fill:parent
-        //toolbar with button to open menu
-        Rectangle
-        {
-            id:toolbar
-            anchors {top:parent.top; left: parent.left; right:parent.right;}
-            height:75
-            color:"black";
-            Image
-            {
-                anchors {top:parent.top; left:parent.left; bottom: parent.bottom;}
-                source: "to_menu.png"
-                MouseArea
-                {
-                    anchors.fill:parent
-                    onClicked:triggerMenu();
-                }
-            }
-            Label
-            {
-                anchors {horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter;}
-                text:menu_listView.currentItem.myData.name;
-                color:"white"
-            }
-        }
+        anchors {left:parent.left; bottom:parent.bottom; right:parent.right; top: toolbar.bottom;}
 
         //load the selected window
         Loader
         {
             id: pageLoader
-            anchors {top:toolbar.bottom; left: parent.left; right:parent.right; bottom: parent.bottom;}
+            anchors {top:parent.top; left: parent.left; right:parent.right; bottom: parent.bottom;}
             source: "StartWindow.qml"
         }
 
