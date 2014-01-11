@@ -12,30 +12,33 @@
 #include <QList>
 #include <QSslError>
 
+#include <QRegularExpression>
+
 class StineClient : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString Log READ getLog WRITE setLog NOTIFY LogChanged)
+    Q_PROPERTY(QString Log READ getLog WRITE writeLog NOTIFY LogChanged)
 public:
     explicit StineClient(QObject *parent = 0);
     Q_INVOKABLE void getData();
     Q_INVOKABLE void getSession(QString Username, QString Password);
 
     QString getLog();
-    void setLog(QString Log);
+    void writeLog(QString Log);
 
 signals:
     void LogChanged();
 
 public slots:
     void replyFinished(QNetworkReply *Reply);
-    void sslErrorOccured(QNetworkReply * Reply, const QList<QSslError> & Errors);
 
 private:
     QString _debugLog;
     QString _session;
-    const QUrl _targetUrl{QStringLiteral("https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll")};
+    int     _state{0};
+    const QString _targetUrl{"https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll"};
+    const QString _terminUrl{"?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A11.01.2014,-AP,-N,-N000000000000000"};
     QNetworkAccessManager _networkManager;
 
 };

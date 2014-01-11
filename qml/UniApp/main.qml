@@ -30,21 +30,25 @@ ApplicationWindow {
         anchors {top:parent.top; left: parent.left; right:parent.right;}
         height:75
         color:"black";
+
         Image
         {
-            anchors {top:parent.top; left:parent.left; bottom: parent.bottom;}
+            id: menuImg;
+            anchors {top:parent.top; left:parent.left; bottom: parent.bottom; topMargin: 5; bottomMargin: 5;}
             source: "to_menu.png"
-            MouseArea
-            {
-                anchors.fill:parent
-                onClicked:triggerMenu();
-            }
         }
         Label
         {
-            anchors {horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter;}
+            id:toolbarLabel;
+            anchors {left: menuImg.right; leftMargin: 5; verticalCenter: parent.verticalCenter;}
             text:menu_listView.currentItem.myData.name;
             color:"white"
+        }
+
+        MouseArea
+        {
+            anchors {left:toolbar.left; top:toolbar.top; bottom:toolbar.bottom; right:toolbarLabel.right;}
+            onClicked:triggerMenu();
         }
     }
 

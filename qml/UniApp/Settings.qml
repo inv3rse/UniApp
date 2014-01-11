@@ -10,8 +10,7 @@ Rectangle {
         id: someId;
         width: implicitWidth;
         height: implicitHeight;
-        anchors.top: parent.top;
-        anchors.horizontalCenter: parent.horizontalCenter;
+        anchors {top: parent.top; topMargin: 20; horizontalCenter: parent.horizontalCenter;}
         spacing: 50;
 
         TextField {
@@ -24,17 +23,22 @@ Rectangle {
             id:password;
             placeholderText: qsTr("Passwort");
             width: settingsWindow.width/2;
-            echoMode: TextInput.PasswordEchoOnEdit;
+            echoMode: TextInput.Password;
         }
 
         Button {
-            text: qsTr("hole Daten");
+            text: qsTr("hole session");
             onClicked: Client.getSession(username.text,password.text);
+        }
+        Button {
+            text: qsTr("hole Daten");
+            onClicked: Client.getData();
         }
     }
 
     TextArea {
         text: Client.Log;
         anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
+//        readOnly: true;
     }
 }
