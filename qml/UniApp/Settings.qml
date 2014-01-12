@@ -39,6 +39,6 @@ Rectangle {
     TextArea {
         text: Client.Log;
         anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
-//        readOnly: true;
+        readOnly: true;
     }
 }

@@ -1,14 +1,14 @@
 #include "stineclient.h"
 
-StineClient::StineClient(QObject *parent) :
+StineClient::StineClient(QObjectList* dataModel,QQmlContext* cont, QObject *parent) :
     QObject(parent)
 {
+    _dataModel = dataModel;
+    _context = cont;
     connect(&_networkManager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
 }
 void StineClient::getData()
-{   //no wildcard support
-    //appointment(.*>\n)+[\t ](.*\n){3}[\t ]+([A-z 0-9]+).*[\n\t]+.*>[\n\t]+(.*)
-
+{
     _state = 2;
     QString tmp = _terminUrl;
     QString url = _targetUrl + tmp.replace("<ID>",_session);
@@ -60,24 +60,37 @@ void StineClient::replyFinished(QNetworkReply *Reply)
     }
     else if (_state ==2 )
     {
+        writeLog("processing...");
         _debugLog = "";
-        QRegularExpression re("(appointment)(.*>)");
-//        re.setPatternOptions(QRegularExpression::MultilineOption);
-        QRegularExpressionMatch match = re.match(Reply->readAll());
-        if (match.hasMatch())
+        //<td class=\"appointment\".*\\n(.*span.*\\n)?(?<time>.*)
+        QRegularExpression re("<td class=\"appointment\".*\\n(.*span.*\\n)?(?<time>.*)\\n(.*span.*\\n)?(.*br.*\\n)?((?<place>.*)<br.*\\n)?.*href=\"(?<link>.*)\n(?<desc>.*)");
+
+        if (!re.isValid())
         {
-            writeLog("match\n");
-            QString reg1 = match.captured(1);
-            QString reg2 = match.captured(2);
-//            QString reg3 = match.captured(3);
-            writeLog(reg1+"\n");
-            writeLog(reg2+"\n");
-//            writeLog(reg3+"\n");
+            writeLog("regular expr is invalid \n");
         }
-        else
+
+        QRegularExpressionMatchIterator i = re.globalMatch(Reply->readAll());
+        while (i.hasNext())
         {
-            writeLog("does not match\n");
+            QString desc,time,place,link;
+            QRegularExpressionMatch match = i.next();
+            desc = match.captured("desc");
+            desc = desc.trimmed();
+            time = match.captured("time");
+            time = time.trimmed();
+            place = match.captured("place");
+            place = place.trimmed();
+            link = match.captured("link");
+
+            _dataModel->append(new StineData(desc,time,place,link));
+
+            writeLog("desc: "+ desc +"\n");
+            writeLog("time: "+ time +"\n");
+            writeLog("place: "+ place +"\n");
+            writeLog("--------\n");
         }
+        _context->setContextProperty("dataModel",QVariant::fromValue(*_dataModel));
     }
 
 

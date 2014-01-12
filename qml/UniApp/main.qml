@@ -62,7 +62,7 @@ ApplicationWindow {
         {
             id:menu_listView
             anchors {topMargin:50; left:parent.left; right:parent.right; bottom:parent.bottom; top:parent.top;}
-            focus:show_menu.x==0? false:true
+            focus:show_menu.x==0? true:false
             highlightFollowsCurrentItem: false
             model: menu_items
             delegate: Item
@@ -100,7 +100,7 @@ ApplicationWindow {
             ListElement
             {
                 name: "Termine"
-                fileName: "StartWindow.qml"
+                fileName: "Today.qml"
             }
             ListElement
             {
@@ -110,7 +110,7 @@ ApplicationWindow {
             ListElement
             {
                 name: "Mensa"
-                fileName: "StartWindow.qml"
+                fileName: "Today.qml"
             }
             ListElement
             {
@@ -132,7 +132,7 @@ ApplicationWindow {
         {
             id: pageLoader
             anchors {top:parent.top; left: parent.left; right:parent.right; bottom: parent.bottom;}
-            source: "StartWindow.qml"
+            source: "Today.qml"
         }
 
         // show menu animation

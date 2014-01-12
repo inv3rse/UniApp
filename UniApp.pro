@@ -10,7 +10,8 @@ QT += network
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    stineclient.cpp
+    stineclient.cpp \
+    stinedata.cpp
 
 # Installation path
 # target.path =
@@ -23,10 +24,12 @@ RESOURCES += \
     qmlData.qrc
 
 HEADERS += \
-    stineclient.h
+    stineclient.h \
+    stinedata.h
 
 ANDROID_EXTRA_LIBS = ../../openssl-1.0.1f/libcrypto.so ../../openssl-1.0.1f/libssl.so
 
 OTHER_FILES += \
     android/libs/armeabi-v7a/libcrypto.so \
-    android/libs/armeabi-v7a/libssl.so
+    android/libs/armeabi-v7a/libssl.so \
+    qml/UniApp/Today.qml

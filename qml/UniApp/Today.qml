@@ -7,16 +7,16 @@ Rectangle
     ListView
     {
         anchors.fill:parent;
-        model:5;
+        model:dataModel;
         anchors.margins: 20
         delegate: Item
         {
             width: parent.width
-            height:150
+            height:200
             Rectangle
             {
                 width: parent.width
-                height:130
+                height:180
                 radius:15;
                 color: "white"
                 Rectangle
@@ -30,7 +30,7 @@ Rectangle
                     {
 
                         font.bold: true;
-                        text:"von xxx bis yyy:"
+                        text:model.modelData.Time;
                     }
                 }
 
@@ -38,7 +38,7 @@ Rectangle
                 {
                     anchors.top:timeDescr.bottom;
                     font.bold: true;
-                    text:"Terminbeschreibung";
+                    text:model.modelData.Description+"\n"+model.modelData.Place;
                 }
             }
         }
