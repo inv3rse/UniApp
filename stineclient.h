@@ -43,7 +43,7 @@ private:
     QString _session;
     int     _state{0};
     const QString _targetUrl{"https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll"};
-    const QString _terminUrl{"?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A14.01.2014,-AP,-N,-N000000000000000"};
+    const QString _terminUrl{"?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000"};
     QNetworkAccessManager _networkManager;
     QObjectList* _dataModel;
     QQmlContext* _context;

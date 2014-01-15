@@ -33,3 +33,5 @@ OTHER_FILES += \
     android/libs/armeabi-v7a/libcrypto.so \
     android/libs/armeabi-v7a/libssl.so \
     qml/UniApp/Today.qml
+
+CONFIG += c++11

@@ -83,7 +83,7 @@ ApplicationWindow {
                     anchors.fill: parent
                     onClicked:
                     {
-                        if(parent.ListView.view.currentIndex !== index)
+                        if(parent.ListView.view.currentIndex !== index && show_menu.x!=0)
                         {
                             menu_listView.currentIndex = index;
                             pageLoader.setSource(fileName);
