@@ -5,8 +5,8 @@ import QtQuick.Layouts 1.0
 ApplicationWindow {
     id: applicationWindow1
     title: qsTr("Hello World")
-    width: 720
-    height: 1230
+    width: 480
+    height: 720
     visible:true
 
     menuBar: MenuBar {
@@ -34,15 +34,16 @@ ApplicationWindow {
         Image
         {
             id: menuImg;
-            anchors {top:parent.top; left:parent.left; bottom: parent.bottom; topMargin: 5; bottomMargin: 5;}
-            source: "to_menu.png"
+            anchors {top:parent.top; left:parent.left; bottom: parent.bottom; topMargin: 10; bottomMargin: 10; leftMargin: 5;}
+            source: "/img/to_menu.png"
         }
         Label
         {
             id:toolbarLabel;
-            anchors {left: menuImg.right; leftMargin: 5; verticalCenter: parent.verticalCenter;}
+            anchors {left: menuImg.right; leftMargin: 10; verticalCenter: parent.verticalCenter;}
             text:menu_listView.currentItem.myData.name;
-            color:"white"
+            font.pixelSize: toolbar.height/2;
+            color:"white";
         }
 
         MouseArea
@@ -69,14 +70,17 @@ ApplicationWindow {
             {
                 property variant myData: model
 
-                height:120
-                width:applicationWindow1.width/2
+                height:120;
+                width:applicationWindow1.width/2;
                 Text
                 {
+                    id: menuText;
                     anchors {verticalCenter: parent.verticalCenter; left:parent.left; leftMargin:20;}
-                    text:name
-                    font.bold: true
                     color:parent.ListView.isCurrentItem ? "red" : "white"
+
+                    text:name;
+                    font.bold: true;
+                    font.pixelSize: parent.height/3;
                 }
                 MouseArea
                 {
@@ -90,7 +94,7 @@ ApplicationWindow {
                         }
                     }
                 }
-                Rectangle { height: 2; width: parent.width * 0.9; color: "gray"; anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom } }
+                Rectangle { height: 2; width: parent.width * 0.9; color: "gray"; anchors { horizontalCenter: parent.horizontalCenter; top: menuText.bottom } }
             }
         }
 

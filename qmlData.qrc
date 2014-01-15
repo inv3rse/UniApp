@@ -3,7 +3,7 @@
         <file>qml/UniApp/main.qml</file>
         <file>qml/UniApp/Settings.qml</file>
         <file>qml/UniApp/Timetable.qml</file>
-        <file>qml/UniApp/to_menu.png</file>
         <file>qml/UniApp/Today.qml</file>
+        <file>img/to_menu.png</file>
     </qresource>
 </RCC>
