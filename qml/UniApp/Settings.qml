@@ -28,11 +28,11 @@ Rectangle {
 
         Button {
             text: qsTr("hole session");
-            onClicked: Client.getSession(username.text,password.text);
+            onClicked: data.getSession(username.text,password.text);
         }
         Button {
             text: qsTr("hole Daten");
-            onClicked: Client.getData();
+            onClicked: data.getData();
         }
     }
 

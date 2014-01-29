@@ -2,6 +2,7 @@
 #define DATALAYER_H
 
 #include <QObject>
+#include <QString>
 #include <QQmlContext>
 #include <vector>
 #include <fstream>
@@ -17,7 +18,10 @@ public:
     void loadFromFile();
     void loadFromClient();
 
-    QList<QObject*> getDataModel();
+    void setUsername(QString User);
+    void setPassword(QString Pass);
+
+    QList<QObject*>* getDataModel();
 
 signals:
 
@@ -27,7 +31,7 @@ public slots:
 private:
     bool saveToFile();
 
-    StineClient     _webClient;
+    StineClient     _webClient{};
     QList<QObject*> _dataModel;
     QQmlContext*    _context;
 
