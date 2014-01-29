@@ -35,6 +35,7 @@ public:
 signals:
     void LogChanged();
     void dataUpdated(QList<QObject*> Data);
+    void gotSession(QString Session);
 
 public slots:
     void replyFinished(QNetworkReply *Reply);

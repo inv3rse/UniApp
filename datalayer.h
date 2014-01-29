@@ -27,6 +27,7 @@ signals:
 
 public slots:
     void setDataModel(QList<QObject*> Data);
+    void saveSession(QString Session);
 
 private:
     bool saveToFile();
@@ -34,6 +35,10 @@ private:
     StineClient     _webClient{};
     QList<QObject*> _dataModel;
     QQmlContext*    _context;
+
+    QString         _username;
+    QString         _password;
+    QString         _session;
 
 };
 

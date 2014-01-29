@@ -21,6 +21,10 @@ void DataLayer::loadFromFile()
 
 void DataLayer::setDataModel(QList<QObject*> Data)
 {
+    for (QObject* obj : Data)
+    {
+        obj->deleteLater();
+    }
     _dataModel.clear();
     _dataModel.append(Data);
     _context->setContextProperty("dataModel",QVariant::fromValue(_dataModel));
@@ -39,10 +43,15 @@ QList<QObject*>* DataLayer::getDataModel()
 
 void DataLayer::setUsername(QString User)
 {
-
+    _username = User;
 }
 
 void DataLayer::setPassword(QString Pass)
 {
+    _password = Pass;
+}
 
+void DataLayer::saveSession(QString Session)
+{
+    _session = Session;
 }

@@ -7,16 +7,25 @@ StineClient::StineClient(QObject *parent) :
 }
 void StineClient::getData()
 {
-    _state = 2;
-    QString tmp = _terminUrl;
-    QString url = _targetUrl + tmp.replace("<ID>",_session);
-    QNetworkRequest Request{QUrl(url)};
-    _networkManager.get(Request);
+    if (_session != "")
+    {
+        _state = 2;
+        QString tmp = _terminUrl;
+        QString url = _targetUrl + tmp.replace("<ID>",_session);
+        QNetworkRequest Request{QUrl(url)};
+        _networkManager.get(Request);
+    }
+    else
+    {
+        state = 3;
+        getSession;
+    }
 }
+
 
 void StineClient::getSession(QString Username, QString Password)
 {
-    _state = 1;
+    _state =_state !=3? 1:3;
     QNetworkRequest Request{QUrl(_targetUrl)};
     QByteArray Data;
     Data.append("usrname=").append(Username).append("&").append("pass=").append(Password).append("&APPNAME=CampusNet&PRGNAME=LOGINCHECK&ARGUMENTS=clino%2Cusrname%2Cpass%2Cmenuno%2Cmenu_type%2Cbrowser%2Cplatform&clino=000000000000000&menuno=000000&menu_type=classic&browser=&platform=");
@@ -35,7 +44,7 @@ void StineClient::replyFinished(QNetworkReply *Reply)
         return;
     }
 
-    if (_state == 1)
+    if (_state == 1 || _state == 3)
     {
         if (Reply->hasRawHeader("refresh"))
         {
@@ -47,6 +56,7 @@ void StineClient::replyFinished(QNetworkReply *Reply)
             end = refresh.indexOf(",");
             refresh = refresh.left(end);
             _session = refresh;
+            emit gotSession(_session);
             writeLog(refresh);
         }
         else
@@ -54,7 +64,14 @@ void StineClient::replyFinished(QNetworkReply *Reply)
             writeLog("login not successfull\n");
         }
         _debugLog="";
-        _state = 0;
+        if (_state != 3)
+        {
+            _state = 0;
+        }
+        else
+        {
+            getData();
+        }
     }
     else if (_state ==2 )
     {
