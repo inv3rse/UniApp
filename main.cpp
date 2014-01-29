@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     Application app(argc, argv);
     QQmlApplicationEngine viewer;
     QList<QObject*> dataModel;
-    StineClient Client{&dataModel,viewer.rootContext()};
+    StineClient Client{};
 
 
     viewer.rootContext()->setContextProperty("Client",&Client);

@@ -13,7 +13,7 @@
 #include <QSslError>
 
 #include <QRegularExpression>
-
+#include <vector>
 
 #include <QQmlContext>
 
@@ -25,7 +25,7 @@ class StineClient : public QObject
 
     Q_PROPERTY(QString Log READ getLog WRITE writeLog NOTIFY LogChanged)
 public:
-    explicit StineClient(QObjectList* dataModel,QQmlContext* cont, QObject *parent = 0);
+    explicit StineClient(QObject *parent = 0);
     Q_INVOKABLE void getData();
     Q_INVOKABLE void getSession(QString Username, QString Password);
 
@@ -34,6 +34,7 @@ public:
 
 signals:
     void LogChanged();
+    void dataUpdated(QList<QObject*> Data);
 
 public slots:
     void replyFinished(QNetworkReply *Reply);
@@ -45,9 +46,6 @@ private:
     const QString _targetUrl{"https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll"};
     const QString _terminUrl{"?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000"};
     QNetworkAccessManager _networkManager;
-    QObjectList* _dataModel;
-    QQmlContext* _context;
-
 };
 
 #endif // STINECLIENT_H

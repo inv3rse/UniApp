@@ -1,10 +1,8 @@
 #include "stineclient.h"
 
-StineClient::StineClient(QObjectList* dataModel,QQmlContext* cont, QObject *parent) :
+StineClient::StineClient(QObject *parent) :
     QObject(parent)
 {
-    _dataModel = dataModel;
-    _context = cont;
     connect(&_networkManager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
 }
 void StineClient::getData()
@@ -70,6 +68,8 @@ void StineClient::replyFinished(QNetworkReply *Reply)
             writeLog("regular expr is invalid \n");
         }
 
+        QList<QObject*> data;
+
         QRegularExpressionMatchIterator i = re.globalMatch(Reply->readAll());
         while (i.hasNext())
         {
@@ -83,14 +83,18 @@ void StineClient::replyFinished(QNetworkReply *Reply)
             place = place.trimmed();
             link = match.captured("link");
 
-            _dataModel->append(new StineData(desc,time,place,link));
+            data.push_back(new StineData(desc,time,place,link));;
+
+//            _dataModel->append(new StineData(desc,time,place,link));
 
             writeLog("desc: "+ desc +"\n");
             writeLog("time: "+ time +"\n");
             writeLog("place: "+ place +"\n");
             writeLog("--------\n");
         }
-        _context->setContextProperty("dataModel",QVariant::fromValue(*_dataModel));
+//        _context->setContextProperty("dataModel",QVariant::fromValue(*_dataModel));
+
+            emit dataUpdated(data);
     }
 
 
