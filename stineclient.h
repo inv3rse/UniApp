@@ -13,7 +13,6 @@
 #include <QSslError>
 
 #include <QRegularExpression>
-#include <vector>
 
 #include <QQmlContext>
 
