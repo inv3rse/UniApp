@@ -28,7 +28,11 @@ Rectangle {
 
         Button {
             text: qsTr("hole session");
-            onClicked: data.getSession(username.text,password.text);
+            onClicked: {
+                data.setUsername(username.text);
+                data.setPassword(password.text);
+                data.loadFromClient();
+            }
         }
         Button {
             text: qsTr("hole Daten");
@@ -37,7 +41,7 @@ Rectangle {
     }
 
     TextArea {
-        text: Client.Log;
+        text: log.Log;
         anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
         readOnly: true;
     }

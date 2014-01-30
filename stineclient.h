@@ -18,34 +18,32 @@
 #include <QQmlContext>
 
 #include "stinedata.h"
+#include "log.h"
 
 class StineClient : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString Log READ getLog WRITE writeLog NOTIFY LogChanged)
 public:
-    explicit StineClient(QObject *parent = 0);
-    Q_INVOKABLE void getData();
-    Q_INVOKABLE void getSession(QString Username, QString Password);
+    explicit            StineClient(QObject *parent = 0);
+    void                getData();
+    void                getSession(QString Username = "", QString Password = "");
 
-    QString getLog();
-    void writeLog(QString Log);
+    void                authenticate(QString Username, QString Password);
 
 signals:
-    void LogChanged();
-    void dataUpdated(QList<QObject*> Data);
-    void gotSession(QString Session);
+    void                dataUpdated(QList<QObject*> Data);
+    void                gotSession(QString Session);
+    void                authRequiered();
 
 public slots:
-    void replyFinished(QNetworkReply *Reply);
+    void                replyFinished(QNetworkReply *Reply);
 
 private:
-    QString _debugLog;
-    QString _session;
-    int     _state{0};
-    const QString _targetUrl{"https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll"};
-    const QString _terminUrl{"?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000"};
+    QString             _session;
+    int                 _state{0};
+    const QString       _targetUrl{"https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll"};
+    const QString       _terminUrl{"?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000"};
     QNetworkAccessManager _networkManager;
 };
 

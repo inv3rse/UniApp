@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QString>
+#include <string>
 #include <QQmlContext>
-#include <vector>
 #include <fstream>
 #include "stineclient.h"
 
@@ -15,11 +15,11 @@ class DataLayer : public QObject
 public:
     explicit DataLayer(QQmlContext* cont, QObject *parent = 0);
 
-    void loadFromFile();
-    void loadFromClient();
+    Q_INVOKABLE void loadFromFile();
+    Q_INVOKABLE void loadFromClient();
 
-    void setUsername(QString User);
-    void setPassword(QString Pass);
+    Q_INVOKABLE void setUsername(QString User);
+    Q_INVOKABLE void setPassword(QString Pass);
 
     QList<QObject*>* getDataModel();
 
@@ -29,6 +29,7 @@ public slots:
     void setDataModel(QList<QObject*> Data);
     void saveSession(QString Session);
 
+    void authenticate();
 private:
     bool saveToFile();
 
@@ -39,6 +40,8 @@ private:
     QString         _username;
     QString         _password;
     QString         _session;
+
+    const std::string _filename{"data"};
 
 };
 
