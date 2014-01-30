@@ -110,7 +110,7 @@ void StineClient::replyFinished(QNetworkReply *Reply)
             place = place.trimmed();
             link = match.captured("link");
 
-            data.push_back(new StineData(desc,time,place,link));;
+            data.push_back(new StineData(desc,time,place,link));
 
             Log::getInstance().writeLog("desc: "+ desc +"\n");
             Log::getInstance().writeLog("time: "+ time +"\n");

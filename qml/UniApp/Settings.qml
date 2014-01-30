@@ -27,24 +27,19 @@ Rectangle {
         }
 
         Button {
-            text: qsTr("hole session");
+            id:saveUser;
+            text: qsTr("Save");
             onClicked: {
                 DataLayer.setUsername(username.text);
                 DataLayer.setPassword(password.text);
-                DataLayer.loadFromClient();
-            }
-        }
-        Button {
-            text: qsTr("hole Daten");
-            onClicked: {
-                log.writeLog("test\n");
+                DataLayer.loadDataFromClient();
             }
         }
     }
 
     TextArea {
         text: log.Log;
-        anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
+        anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: saveUser.bottom; topMargin: 50;}
         readOnly: true;
     }
 }

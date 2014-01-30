@@ -56,7 +56,7 @@ ApplicationWindow {
             MouseArea
             {
                 anchors.fill: parent;
-                onClicked: DataLayer.loadFromClient();
+                onClicked: DataLayer.loadDataFromClient();
             }
         }
 
