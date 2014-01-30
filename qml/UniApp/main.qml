@@ -34,7 +34,8 @@ ApplicationWindow {
         Image
         {
             id: menuImg;
-            anchors {top:parent.top; left:parent.left; bottom: parent.bottom; topMargin: 10; bottomMargin: 10; leftMargin: 5;}
+            anchors {top:parent.top; left:parent.left; bottom: parent.bottom; topMargin: 10; bottomMargin: 10; leftMargin: 0;}
+            width:height*1.5;
             source: "/img/to_menu.png"
         }
         Label
