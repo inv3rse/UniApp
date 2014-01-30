@@ -21,7 +21,7 @@ public:
     Q_INVOKABLE void setUsername(QString User);
     Q_INVOKABLE void setPassword(QString Pass);
 
-    QList<QObject*>* getDataModel();
+    QList<QObject*> getDataModel();
 
 signals:
 
@@ -41,7 +41,7 @@ private:
     QString         _password;
     QString         _session;
 
-    const std::string _filename{"data"};
+    std::string _filename;
 
 };
 

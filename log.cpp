@@ -13,6 +13,7 @@ Log& Log::getInstance()
 
 void Log::writeLog(QString log, int loglevel)
 {
+    std::cout<<log.toStdString()<<std::endl;
     _log.prepend(log);
     emit logChanged();
 }

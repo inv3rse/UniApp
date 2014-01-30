@@ -46,6 +46,20 @@ ApplicationWindow {
             color:"white";
         }
 
+        Image
+        {
+            id:refreshIcon;
+            anchors {top:parent.top; right:parent.right; bottom: parent.bottom; topMargin: 10; bottomMargin: 10;}
+            width: height;
+            source: "/img/refresh.png";
+
+            MouseArea
+            {
+                anchors.fill: parent;
+                onClicked: DataLayer.loadFromClient();
+            }
+        }
+
         MouseArea
         {
             anchors {left:toolbar.left; top:toolbar.top; bottom:toolbar.bottom; right:toolbarLabel.right;}

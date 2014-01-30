@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <iostream>
 
 class Log : public QObject
 {
@@ -11,8 +12,8 @@ class Log : public QObject
 
 public:
     static Log& getInstance();
-    void writeLog(QString log,int loglevel = 0);
-    void clear();
+    Q_INVOKABLE void writeLog(QString log,int loglevel = 0);
+    Q_INVOKABLE void clear();
     QString getLog();
 
 signals:

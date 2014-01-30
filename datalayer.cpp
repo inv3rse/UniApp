@@ -3,10 +3,14 @@
 DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
     QObject(parent)
 {
+    _filename = "data";
     _context = cont;
+
     connect(&_webClient,SIGNAL(dataUpdated(QList<QObject*>)),this,SLOT(setDataModel(QList<QObject*>)));
     connect(&_webClient,SIGNAL(authRequiered()),this,SLOT(authenticate()));
     connect(&_webClient,SIGNAL(gotSession(QString)),this,SLOT(saveSession(QString)));
+
+    loadFromFile();
 }
 
 
@@ -29,12 +33,14 @@ void DataLayer::loadFromFile()
             _password=QString::fromStdString(password);
             _session=QString::fromStdString(session);
         }
+        data.close();
+        Log::getInstance().writeLog(_username+" "+_password);
     }
 }
 
 void DataLayer::setDataModel(QList<QObject*> Data)
 {
-    for (QObject* obj : Data)
+    for(QObject* obj : _dataModel)
     {
         obj->deleteLater();
     }
@@ -45,6 +51,7 @@ void DataLayer::setDataModel(QList<QObject*> Data)
 
 void DataLayer::authenticate()
 {
+    Log::getInstance().writeLog("authenticating as"+ _username+" "+_password+"\n");
     _webClient.authenticate(_username,_password);
 }
 
@@ -61,9 +68,9 @@ bool DataLayer::saveToFile()
     return false;
 }
 
-QList<QObject*>* DataLayer::getDataModel()
+QList<QObject*> DataLayer::getDataModel()
 {
-    return &_dataModel;
+    return _dataModel;
 }
 
 void DataLayer::setUsername(QString User)

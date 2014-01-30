@@ -1,5 +1,4 @@
 #include "qtquick2controlsapplicationviewer.h"
-#include "stineclient.h"
 #include "datalayer.h"
 #include "log.h"
 
@@ -12,12 +11,11 @@ int main(int argc, char *argv[])
     Application app(argc, argv);
     QQmlApplicationEngine viewer;
 
-    DataLayer data{viewer.rootContext()};
+    DataLayer data{viewer.rootContext(),0};
 
-
-    viewer.rootContext()->setContextProperty("data",&data);
+    viewer.rootContext()->setContextProperty("DataLayer",&data);
     viewer.rootContext()->setContextProperty("log",&Log::getInstance());
-    viewer.rootContext()->setContextProperty("dataModel",QVariant::fromValue(*data.getDataModel()));
+    viewer.rootContext()->setContextProperty("dataModel",QVariant::fromValue(data.getDataModel()));
     viewer.load(QUrl("qrc:/qml/UniApp/main.qml"));
 
 

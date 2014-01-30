@@ -29,14 +29,16 @@ Rectangle {
         Button {
             text: qsTr("hole session");
             onClicked: {
-                data.setUsername(username.text);
-                data.setPassword(password.text);
-                data.loadFromClient();
+                DataLayer.setUsername(username.text);
+                DataLayer.setPassword(password.text);
+                DataLayer.loadFromClient();
             }
         }
         Button {
             text: qsTr("hole Daten");
-            onClicked: data.getData();
+            onClicked: {
+                log.writeLog("test\n");
+            }
         }
     }
 
