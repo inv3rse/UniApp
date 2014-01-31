@@ -28,6 +28,8 @@ Rectangle {
 
         Button {
             id:saveUser;
+            height: implicitHeight;
+            width: implicitWidth;
             text: qsTr("Save");
             onClicked: {
                 DataLayer.setUsername(username.text);
@@ -39,7 +41,7 @@ Rectangle {
 
     TextArea {
         text: log.Log;
-        anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: saveUser.bottom; topMargin: 50;}
+        anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
         readOnly: true;
     }
 }

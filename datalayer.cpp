@@ -1,7 +1,7 @@
 #include "datalayer.h"
 
-const std::string DataLayer::_USERFILE= "UserInfo";
-const std::string DataLayer::_DATAFILE= "UserData";
+const QString DataLayer::_USERFILE= "UserInfo";
+const QString DataLayer::_DATAFILE= "UserData";
 
 
 DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
@@ -26,7 +26,7 @@ void DataLayer::loadDataFromClient()
 
 bool DataLayer::saveDataToFile()
 {
-    QFile file(QString::fromStdString(_DATAFILE));
+    QFile file(_DATAFILE);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return false;
 
@@ -44,7 +44,7 @@ bool DataLayer::saveDataToFile()
 
 void DataLayer::loadDataFromFile()
 {
-    QFile file(QString::fromStdString(_DATAFILE));
+    QFile file(_DATAFILE);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
@@ -72,7 +72,7 @@ void DataLayer::loadDataFromFile()
 
 bool DataLayer::saveUserToFile()
 {
-    QFile file(QString::fromStdString(_USERFILE));
+    QFile file(_USERFILE);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return false;
 
@@ -89,7 +89,7 @@ bool DataLayer::saveUserToFile()
 void DataLayer::loadUserFromFile()
 {
 
-    QFile file(QString::fromStdString(_USERFILE));
+    QFile file(_USERFILE);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 

@@ -83,8 +83,8 @@ private:
     QString         _password;
     QString         _session;
 
-    static const std::string _USERFILE;
-    static const std::string _DATAFILE;
+    static const QString _USERFILE;
+    static const QString _DATAFILE;
 };
 
 #endif // DATALAYER_H
