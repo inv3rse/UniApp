@@ -23,33 +23,23 @@ void DataLayer::loadDataFromClient()
     _webClient.getData();
 }
 
-bool DataLayer::saveUserToFile()
-{
-    std::fstream file{};
-    file.open(_USERFILE,std::ios::out);
-    if (file.is_open())
-    {
-        file<<_username.toStdString()<<"\t"<<_password.toStdString()<<"\t"<<_session.toStdString()<<"\n";
-        file.close();
-        return true;
-    }
-    return false;
-}
 
 bool DataLayer::saveDataToFile()
 {
-    std::fstream file{};
-    file.open(_DATAFILE,std::ios::out);
-    if (file.is_open())
+    QFile file(QString::fromStdString(_DATAFILE));
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return false;
+
+    QByteArray writeData;
+    for (QObject* obj : _dataModel)
     {
-        for (QObject* obj : _dataModel)
-        {
-            StineData* data = qobject_cast<StineData*>(obj);
-            file<<data->getDescription().toStdString()<<"\t"<<data->getTime().toStdString()<<"\t"<<data->getPlace().toStdString()<<"\t"<<data->getInfoLink().toStdString()<<std::endl;
-        }
-        return true;
+        StineData* Entry = qobject_cast<StineData*>(obj);
+        writeData.append(Entry->getDescription()).append("\t").append(Entry->getTime()).append("\t").append(Entry->getPlace()).append("\t").append(Entry->getInfoLink()).append("\n");
     }
-    return false;
+    int length = file.write(writeData);
+    file.close();
+
+    return length == -1? false:true;
 }
 
 void DataLayer::loadDataFromFile()
@@ -79,22 +69,39 @@ void DataLayer::loadDataFromFile()
     setDataModel(Entry);
 }
 
+
+bool DataLayer::saveUserToFile()
+{
+    QFile file(QString::fromStdString(_USERFILE));
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return false;
+
+    QByteArray writeData;
+
+    writeData.append(_username).append("\t").append(_password).append("\t").append(_session).append("\n");
+
+    int length = file.write(writeData);
+    file.close();
+
+    return length == -1? false:true;
+}
+
 void DataLayer::loadUserFromFile()
 {
-    std::fstream data{};
-    data.open(_USERFILE,std::ios::in);
-    if(data.is_open())
+
+    QFile file(QString::fromStdString(_USERFILE));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QByteArray line = file.readLine();
+    file.close();
+    QList<QByteArray> data = line.split('\t');
+
+    if (data.size()>=3)
     {
-        if(!data.eof())
-        {
-            std::string username,password,session;
-            data>>username>>password>>session;
-            _username=QString::fromStdString(username);
-            _password=QString::fromStdString(password);
-            _session=QString::fromStdString(session);
-        }
-        data.close();
-        Log::getInstance().writeLog(_username+" "+_password);
+        _username = QString(data.at(0));
+        _password = QString(data.at(1));
+        _session  = QString(data.at(2));
     }
 }
 

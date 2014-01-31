@@ -50,7 +50,7 @@ ApplicationWindow {
         Image
         {
             id:refreshIcon;
-            anchors {top:parent.top; right:parent.right; bottom: parent.bottom; topMargin: 10; bottomMargin: 10;}
+            anchors {top:parent.top; right:parent.right; bottom: parent.bottom; rightMargin:15; topMargin: 10; bottomMargin: 10;}
             width: height;
             source: "/img/refresh.png";
 
