@@ -44,11 +44,17 @@ signals:
     void                dataUpdated(Day* selectedDay);
     void                gotSession(QString Session);
     void                authRequiered();
+    void                loginFailed();
 
 public slots:
     void                replyFinished(QNetworkReply *Reply);
 
 private:
+
+    void                extractSession(QNetworkReply *Reply);
+    void                extractData(QNetworkReply *Reply);
+
+
     QString               _session;
     int                   _state{0};
     QNetworkAccessManager _networkManager;
@@ -56,6 +62,7 @@ private:
     static const QString    TARGETURL;
     static const QString    TERMINURL;
     static const QString    LOGINPARAMS;
+    static const QRegularExpression DATAEXPRESSION;
 };
 
 #endif // STINECLIENT_H

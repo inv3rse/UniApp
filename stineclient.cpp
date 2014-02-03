@@ -1,8 +1,9 @@
 #include "stineclient.h"
 
-const QString StineClient::TARGETURL    = "https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll";
-const QString StineClient::TERMINURL    = "?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000";
-const QString StineClient::LOGINPARAMS  = "&APPNAME=CampusNet&PRGNAME=LOGINCHECK&ARGUMENTS=clino%2Cusrname%2Cpass%2Cmenuno%2Cmenu_type%2Cbrowser%2Cplatform&clino=000000000000000&menuno=000000&menu_type=classic&browser=&platform=";
+const QString StineClient::TARGETURL                    = "https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll";
+const QString StineClient::TERMINURL                    = "?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000";
+const QString StineClient::LOGINPARAMS                  = "&APPNAME=CampusNet&PRGNAME=LOGINCHECK&ARGUMENTS=clino%2Cusrname%2Cpass%2Cmenuno%2Cmenu_type%2Cbrowser%2Cplatform&clino=000000000000000&menuno=000000&menu_type=classic&browser=&platform=";
+const QRegularExpression StineClient::DATAEXPRESSION    {"<td class=\"appointment\".*\\n(.*span.*\\n)?(.*i>.*\\n)?(?<time>.*)\\n(.*i>.*\\n)?(.*span.*\\n)?(.*br.*\\n)?(.*i>.*\\n)?((?<place>.*)?<br.*\\n)?(.*\\n.*\\n)?.*href=\"(?<link>.*)\".*title=\"(?<desc>.*)\""};
 
 
 StineClient::StineClient(QObject *parent) :
@@ -48,6 +49,88 @@ void StineClient::getSession(QString Username, QString Password)
 }
 
 
+void StineClient::extractSession(QNetworkReply *Reply)
+{
+    if (Reply->hasRawHeader("refresh"))
+    {
+        Log::getInstance().writeLog("login successfull\n");
+        QByteArray refresh = Reply->rawHeader("refresh");
+        int start, end;
+        start = refresh.indexOf("ARGUMENT") + 10;
+        refresh = refresh.mid(start);
+        end = refresh.indexOf(",");
+        refresh = refresh.left(end);
+        _session = refresh;
+        emit gotSession(_session);
+        Log::getInstance().writeLog(refresh+"\n");
+    }
+    else
+    {
+        Log::getInstance().writeLog("login not successfull");
+        Log::getInstance().writeLog("Check Username and Password\n");
+        _state = 0;
+
+        emit loginFailed();
+
+        return;
+    }
+
+    if (_state != 3)
+    {
+        _state = 0;
+    }
+    else
+    {
+        getData();
+    }
+}
+
+
+void StineClient::extractData(QNetworkReply *Reply)
+{
+    if (!DATAEXPRESSION.isValid())
+    {
+        Log::getInstance().writeLog("regular expr is invalid \n");
+    }
+
+    QByteArray htmlData = Reply->readAll();
+
+    if (htmlData.contains("Zugang verweigert"))
+    {
+        Log::getInstance().writeLog("Session invalid, Access denied\n");
+        Log::getInstance().writeLog("Updating Session...\n");
+        _state = 3;
+        getSession();
+    }
+
+    QList<QObject*> data;
+
+    QRegularExpressionMatchIterator i = DATAEXPRESSION.globalMatch(htmlData);
+    while (i.hasNext())
+    {
+        QString desc,time,place,link;
+        QRegularExpressionMatch match = i.next();
+        desc = match.captured("desc");
+        desc = desc.trimmed();
+        time = match.captured("time");
+        time = time.trimmed();
+        place = match.captured("place");
+        place = place.trimmed();
+        link = match.captured("link");
+
+        data.push_back(new Termin(desc,time,place,link));
+
+        Log::getInstance().writeLog("desc: "+ desc +"\n");
+        Log::getInstance().writeLog("time: "+ time +"\n");
+        Log::getInstance().writeLog("place: "+ place +"\n");
+        Log::getInstance().writeLog("--------\n");
+    }
+        emit dataUpdated(new Day(data,"",""));
+}
+
+
+
+
 void StineClient::replyFinished(QNetworkReply *Reply)
 {
     Reply->deleteLater();
@@ -60,82 +143,16 @@ void StineClient::replyFinished(QNetworkReply *Reply)
 
     if (_state == 1 || _state == 3)
     {
-        if (Reply->hasRawHeader("refresh"))
-        {
-            Log::getInstance().writeLog("login successfull\n");
-            QByteArray refresh = Reply->rawHeader("refresh");
-            int start, end;
-            start = refresh.indexOf("ARGUMENT") + 10;
-            refresh = refresh.mid(start);
-            end = refresh.indexOf(",");
-            refresh = refresh.left(end);
-            _session = refresh;
-            emit gotSession(_session);
-            Log::getInstance().writeLog(refresh+"\n");
-        }
-        else
-        {
-            Log::getInstance().writeLog("login not successfull");
-            Log::getInstance().writeLog("Check Username and Password\n");
-            _state = 0;
-            return;
-        }
-
-        if (_state != 3)
-        {
-            _state = 0;
-        }
-        else
-        {
-            getData();
-        }
+        extractSession(Reply);
     }
 
     else if (_state == 2 )
     {
-        QRegularExpression re("<td class=\"appointment\".*\\n(.*span.*\\n)?(.*i>.*\\n)?(?<time>.*)\\n(.*i>.*\\n)?(.*span.*\\n)?(.*br.*\\n)?(.*i>.*\\n)?((?<place>.*)?<br.*\\n)?(.*\\n.*\\n)?.*href=\"(?<link>.*)\".*title=\"(?<desc>.*)\"");
-
-        if (!re.isValid())
-        {
-            Log::getInstance().writeLog("regular expr is invalid \n");
-        }
-
-        // Todo: check if session is invalid
-        QByteArray htmlData = Reply->readAll();
-
-        if (htmlData.contains("Zugang verweigert"))
-        {
-            Log::getInstance().writeLog("Session invalid, Access denied\n");
-            Log::getInstance().writeLog("Updating Session...\n");
-            _state = 3;
-            getSession();
-        }
-
-        QList<QObject*> data;
-
-        QRegularExpressionMatchIterator i = re.globalMatch(htmlData);
-        while (i.hasNext())
-        {
-            QString desc,time,place,link;
-            QRegularExpressionMatch match = i.next();
-            desc = match.captured("desc");
-            desc = desc.trimmed();
-            time = match.captured("time");
-            time = time.trimmed();
-            place = match.captured("place");
-            place = place.trimmed();
-            link = match.captured("link");
-
-            data.push_back(new Termin(desc,time,place,link));
-
-            Log::getInstance().writeLog("desc: "+ desc +"\n");
-            Log::getInstance().writeLog("time: "+ time +"\n");
-            Log::getInstance().writeLog("place: "+ place +"\n");
-            Log::getInstance().writeLog("--------\n");
-        }
-            emit dataUpdated(new Day(data,"",""));
+        extractData(Reply);
     }
 }
+
+
 
 void StineClient::setSession(QString Session)
 {
