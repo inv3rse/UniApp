@@ -10,6 +10,7 @@ StineClient::StineClient(QObject *parent) :
     QObject(parent)
 {
     _session="";
+    _terminUrl=TERMINURL;
     connect(&_networkManager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
 }
 void StineClient::getData()
@@ -17,8 +18,9 @@ void StineClient::getData()
     if (_session != "")
     {
         _state = 2;
-        QString tmp = TERMINURL;
+        QString tmp = _terminUrl;
         QString url = TARGETURL + tmp.replace("<ID>",_session);
+        Log::getInstance().writeLog("req: "+url+"\n");
         QNetworkRequest Request{QUrl(url)};
         _networkManager.get(Request);
         Log::getInstance().writeLog("Data Reqest send\n");
@@ -68,6 +70,7 @@ void StineClient::extractSession(QNetworkReply *Reply)
     {
         Log::getInstance().writeLog("login not successfull");
         Log::getInstance().writeLog("Check Username and Password\n");
+        _terminUrl = TERMINURL;
         _state = 0;
 
         emit loginFailed();
@@ -103,9 +106,32 @@ void StineClient::extractData(QNetworkReply *Reply)
         getSession();
     }
 
+    QString before;
+    QString next;
     QList<QObject*> data;
 
+    QRegularExpressionMatchIterator j = QRegularExpression("href=\"/scripts/mgrqispi.dll(?<before>.*)\".title.*skipLeft").globalMatch(htmlData);
+    if (j.hasNext())
+    {
+        QRegularExpressionMatch match = j.next();
+        before = match.captured("before");
+    }
+
+    QRegularExpressionMatchIterator k = QRegularExpression("href=\"/scripts/mgrqispi.dll(?<next>.*)\".title.*skipRight").globalMatch(htmlData);
+    if (k.hasNext())
+    {
+        QRegularExpressionMatch match = k.next();
+        next = match.captured("next");
+    }
+
+    next = next.replace("&amp;","&");
+    before = before.replace("&amp;","&");
+
+    Log::getInstance().writeLog("before: "+ before +"\n");
+    Log::getInstance().writeLog("next: "+ next +"\n");
+
     QRegularExpressionMatchIterator i = DATAEXPRESSION.globalMatch(htmlData);
+
     while (i.hasNext())
     {
         QString desc,time,place,link;
@@ -125,7 +151,7 @@ void StineClient::extractData(QNetworkReply *Reply)
         Log::getInstance().writeLog("place: "+ place +"\n");
         Log::getInstance().writeLog("--------\n");
     }
-        emit dataUpdated(new Day(data,"",""));
+    emit dataUpdated(new Day(data,next,before));
 }
 
 
@@ -153,6 +179,16 @@ void StineClient::replyFinished(QNetworkReply *Reply)
 }
 
 
+
+void StineClient::setTerminUrl(QString terminUrl)
+{
+    _terminUrl = terminUrl;
+}
+
+void StineClient::resetTerminUrl()
+{
+    _terminUrl = TERMINURL;
+}
 
 void StineClient::setSession(QString Session)
 {

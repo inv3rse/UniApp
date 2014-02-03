@@ -31,7 +31,7 @@ public:
     /**
       * @brief lädt die aktuellen Daten von Stine herunter
       */
-    Q_INVOKABLE void loadDataFromClient();
+    Q_INVOKABLE void loadDataFromClient(int day = 0);
 
     /**
       * @brief setzt den Username der zum login verwendet wird
@@ -49,7 +49,7 @@ public:
      * @brief Gibt eine Referenz auf die Daten zurück
      * @return
      */
-    QList<QObject*>& getDataModel();
+    QList<QObject *> getDataModel();
 
 signals:
 
@@ -82,7 +82,7 @@ private:
     bool saveDataToFile();
 
     StineClient     _webClient{};
-    Day             _currentDay;
+    Day*            _currentDay;
     QList<QObject*> _dataModel;
     QQmlContext*    _context;
 

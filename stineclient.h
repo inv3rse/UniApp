@@ -37,6 +37,8 @@ public:
     void                getSession(QString Username = "", QString Password = "");
 
     void                setSession(QString Session);
+    void                setTerminUrl(QString terminUrl);
+    void                resetTerminUrl();
 
     void                authenticate(QString Username, QString Password);
 
@@ -57,6 +59,7 @@ private:
 
     QString               _session;
     int                   _state{0};
+    QString               _terminUrl;
     QNetworkAccessManager _networkManager;
 
     static const QString    TARGETURL;

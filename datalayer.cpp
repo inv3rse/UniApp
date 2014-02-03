@@ -8,6 +8,7 @@ DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
     QObject(parent)
 {
     _context = cont;
+    _currentDay = NULL;
 
     connect(&_webClient,SIGNAL(dataUpdated(Day*)),this,SLOT(setDataModel(Day*)));
     connect(&_webClient,SIGNAL(authRequiered()),this,SLOT(authenticate()));
@@ -18,8 +19,20 @@ DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
 }
 
 
-void DataLayer::loadDataFromClient()
+void DataLayer::loadDataFromClient(int day)
 {
+    if (day > 0)
+    {
+        _webClient.setTerminUrl(_currentDay->getNextDay());
+    }
+    else if(day < 0)
+    {
+        _webClient.setTerminUrl(_currentDay->getPrevDay());
+    }
+    else
+    {
+        _webClient.resetTerminUrl();
+    }
     _webClient.getData();
 }
 
@@ -31,11 +44,15 @@ bool DataLayer::saveDataToFile()
         return false;
 
     QByteArray writeData;
-    for (QObject* obj : _dataModel)
+
+    writeData.append(_currentDay->getNextDay()).append("\t").append(_currentDay->getPrevDay()).append("\n");
+
+    for (QObject* obj : _currentDay->getAppointments())
     {
         Termin* Entry = qobject_cast<Termin*>(obj);
         writeData.append(Entry->getDescription()).append("\t").append(Entry->getTime()).append("\t").append(Entry->getPlace()).append("\t").append(Entry->getInfoLink()).append("\n");
     }
+
     int length = file.write(writeData);
     file.close();
 
@@ -48,25 +65,44 @@ void DataLayer::loadDataFromFile()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    QList<QObject*> Entry;
-    while (!file.atEnd())
+    QList<QObject*> Appointments;
+    QString nextDay;
+    QString prevDay;
+
+    if(!file.atEnd())
     {
-        QString desc,time,place,link;
+        QByteArray otherDayLine = file.readLine();
+        QList<QByteArray> otherDays = otherDayLine.split('\t');
 
-        QByteArray line = file.readLine();
-        QList<QByteArray> data = line.split('\t');
-
-        if (data.size()>=4)
+        if (otherDays.size()==2)
         {
-            desc = QString(data.at(0));
-            time = QString(data.at(1));
-            place = QString(data.at(2));
-            link = QString(data.at(3));
+            nextDay = otherDays.at(0);
+            prevDay = otherDays.at(1);
+        }
+        else
+        {
+            return;
+        }
 
-            Entry.push_back(new Termin(desc,time,place,link));
+        while (!file.atEnd())
+        {
+            QString desc,time,place,link;
+
+            QByteArray line = file.readLine();
+            QList<QByteArray> data = line.split('\t');
+
+            if (data.size()>=4)
+            {
+                desc = QString(data.at(0));
+                time = QString(data.at(1));
+                place = QString(data.at(2));
+                link = QString(data.at(3));
+
+                Appointments.push_back(new Termin(desc,time,place,link));
+            }
         }
     }
-    setDataModel(new Day(Entry,"",""));
+    setDataModel(new Day(Appointments,nextDay,prevDay));
 }
 
 
@@ -106,7 +142,7 @@ void DataLayer::loadUserFromFile()
     }
 }
 
-QList<QObject *> &DataLayer::getDataModel()
+QList<QObject *> DataLayer::getDataModel()
 {
     return _dataModel;
 }
@@ -141,12 +177,13 @@ void DataLayer::loginFailed()
 
 void DataLayer::setDataModel(Day* currentDay)
 {
-    for(QObject* obj : _dataModel)
+    if (_currentDay != NULL)
     {
-        obj->deleteLater();
+         _currentDay->deleteLater();
     }
-    _dataModel.clear();
-    _dataModel.append(currentDay->getAppointments());
+    _currentDay = currentDay;
+    _dataModel  = _currentDay->getAppointments();
+
     saveDataToFile();
     _context->setContextProperty("dataModel",QVariant::fromValue(_dataModel));
 }

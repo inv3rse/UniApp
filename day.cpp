@@ -14,8 +14,17 @@ Day::Day(QObject *parent) :
 
 }
 
+Day::~Day()
+{
+    for (QObject* obj : _appointments)
+    {
+        delete obj;
+    }
+    _appointments.clear();
+}
 
-QList<QObject*> Day::getAppointments()
+
+const QList<QObject *> Day::getAppointments()
 {
     return _appointments;
 }

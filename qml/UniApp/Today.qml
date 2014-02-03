@@ -12,26 +12,30 @@ Rectangle
     Rectangle
     {
         id:selectDay;
-        anchors{left:parent.left; right:parent.right; top:parent.top;}
-        height:implicitHeight;
+        anchors{left:parent.left; right:parent.right; bottom:parent.bottom;}
+        height:50;
 
         Button
         {
             anchors.left: parent.left;
+            anchors.bottom: parent.bottom;
             text:"prev";
+            onClicked: DataLayer.loadDataFromClient(-1);
         }
 
         Button
         {
             anchors.right: parent.right;
+            anchors.bottom: parent.bottom;
             text:"next";
+            onClicked: DataLayer.loadDataFromClient(1);
         }
     }
 
     ListView
     {
 //        anchors.fill:parent;
-        anchors{left:parent.left; right:parent.right; top:selectDay.bottom; bottom:parent.bottom;}
+        anchors{left:parent.left; right:parent.right; top:parent.top; bottom:selectDay.top;}
         model: dataModel;
         delegate: Item
         {
