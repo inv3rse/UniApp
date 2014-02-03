@@ -102,6 +102,7 @@ void DataLayer::loadUserFromFile()
         _username = QString(data.at(0));
         _password = QString(data.at(1));
         _session  = QString(data.at(2));
+        _webClient.setSession(_session);
     }
 }
 

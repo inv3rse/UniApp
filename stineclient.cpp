@@ -50,10 +50,10 @@ void StineClient::getSession(QString Username, QString Password)
 
 void StineClient::replyFinished(QNetworkReply *Reply)
 {
+    Reply->deleteLater();
     if (Reply->error()!=QNetworkReply::NoError)
     {
         Log::getInstance().writeLog(Reply->errorString()+"\n");
-        Reply->deleteLater();
         _state = 666;
         return;
     }
@@ -75,7 +75,10 @@ void StineClient::replyFinished(QNetworkReply *Reply)
         }
         else
         {
-            Log::getInstance().writeLog("login not successfull\n");
+            Log::getInstance().writeLog("login not successfull");
+            Log::getInstance().writeLog("Check Username and Password\n");
+            _state = 0;
+            return;
         }
 
         if (_state != 3)
@@ -97,12 +100,20 @@ void StineClient::replyFinished(QNetworkReply *Reply)
             Log::getInstance().writeLog("regular expr is invalid \n");
         }
 
+        // Todo: check if session is invalid
+        QByteArray htmlData = Reply->readAll();
+
+        if (htmlData.contains("Zugang verweigert"))
+        {
+            Log::getInstance().writeLog("Session invalid, Access denied\n");
+            Log::getInstance().writeLog("Updating Session...\n");
+            _state = 3;
+            getSession();
+        }
+
         QList<QObject*> data;
 
-        // Todo: check if session is invalid
-
-
-        QRegularExpressionMatchIterator i = re.globalMatch(Reply->readAll());
+        QRegularExpressionMatchIterator i = re.globalMatch(htmlData);
         while (i.hasNext())
         {
             QString desc,time,place,link;
@@ -124,7 +135,11 @@ void StineClient::replyFinished(QNetworkReply *Reply)
         }
             emit dataUpdated(new Day(data,"",""));
     }
-    Reply->deleteLater();
+}
+
+void StineClient::setSession(QString Session)
+{
+    _session = Session;
 }
 
 void StineClient::authenticate(QString Username, QString Password)

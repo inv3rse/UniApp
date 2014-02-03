@@ -23,8 +23,20 @@ class StineClient : public QObject
 
 public:
     explicit            StineClient(QObject *parent = 0);
+
+    /**
+     * @brief if successful the signal dataUpdated is triggerd
+     */
     void                getData();
+
+    /**
+     * @brief if login is successful the signal gotSession is triggerd
+     * @param Username user to login
+     * @param Password corresponding password
+     */
     void                getSession(QString Username = "", QString Password = "");
+
+    void                setSession(QString Session);
 
     void                authenticate(QString Username, QString Password);
 
@@ -37,8 +49,8 @@ public slots:
     void                replyFinished(QNetworkReply *Reply);
 
 private:
-    QString             _session;
-    int                 _state{0};
+    QString               _session;
+    int                   _state{0};
     QNetworkAccessManager _networkManager;
 
     static const QString    TARGETURL;
