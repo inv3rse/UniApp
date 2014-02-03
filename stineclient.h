@@ -14,9 +14,7 @@
 
 #include <QRegularExpression>
 
-#include <QQmlContext>
-
-#include "stinedata.h"
+#include "day.h"
 #include "log.h"
 
 class StineClient : public QObject
@@ -31,7 +29,7 @@ public:
     void                authenticate(QString Username, QString Password);
 
 signals:
-    void                dataUpdated(QList<QObject*> Data);
+    void                dataUpdated(Day* selectedDay);
     void                gotSession(QString Session);
     void                authRequiered();
 
@@ -41,9 +39,11 @@ public slots:
 private:
     QString             _session;
     int                 _state{0};
-    const QString       _targetUrl{"https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll"};
-    const QString       _terminUrl{"?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000"};
     QNetworkAccessManager _networkManager;
+
+    static const QString    TARGETURL;
+    static const QString    TERMINURL;
+    static const QString    LOGINPARAMS;
 };
 
 #endif // STINECLIENT_H

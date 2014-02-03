@@ -9,7 +9,7 @@ DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
 {
     _context = cont;
 
-    connect(&_webClient,SIGNAL(dataUpdated(QList<QObject*>)),this,SLOT(setDataModel(QList<QObject*>)));
+    connect(&_webClient,SIGNAL(dataUpdated(Day*)),this,SLOT(setDataModel(Day*)));
     connect(&_webClient,SIGNAL(authRequiered()),this,SLOT(authenticate()));
     connect(&_webClient,SIGNAL(gotSession(QString)),this,SLOT(saveSession(QString)));
 
@@ -33,7 +33,7 @@ bool DataLayer::saveDataToFile()
     QByteArray writeData;
     for (QObject* obj : _dataModel)
     {
-        StineData* Entry = qobject_cast<StineData*>(obj);
+        Termin* Entry = qobject_cast<Termin*>(obj);
         writeData.append(Entry->getDescription()).append("\t").append(Entry->getTime()).append("\t").append(Entry->getPlace()).append("\t").append(Entry->getInfoLink()).append("\n");
     }
     int length = file.write(writeData);
@@ -63,10 +63,10 @@ void DataLayer::loadDataFromFile()
             place = QString(data.at(2));
             link = QString(data.at(3));
 
-            Entry.push_back(new StineData(desc,time,place,link));
+            Entry.push_back(new Termin(desc,time,place,link));
         }
     }
-    setDataModel(Entry);
+    setDataModel(new Day(Entry,"",""));
 }
 
 
@@ -105,7 +105,7 @@ void DataLayer::loadUserFromFile()
     }
 }
 
-QList<QObject*> DataLayer::getDataModel()
+QList<QObject *> &DataLayer::getDataModel()
 {
     return _dataModel;
 }
@@ -138,14 +138,14 @@ void DataLayer::loginFailed()
     //TODO: implementation
 }
 
-void DataLayer::setDataModel(QList<QObject*> Data)
+void DataLayer::setDataModel(Day* currentDay)
 {
     for(QObject* obj : _dataModel)
     {
         obj->deleteLater();
     }
     _dataModel.clear();
-    _dataModel.append(Data);
+    _dataModel.append(currentDay->getAppointments());
     saveDataToFile();
     _context->setContextProperty("dataModel",QVariant::fromValue(_dataModel));
 }

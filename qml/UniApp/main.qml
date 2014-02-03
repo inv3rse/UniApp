@@ -40,8 +40,8 @@ ApplicationWindow {
         }
         Label
         {
-            id:toolbarLabel;
-            anchors {left: menuImg.right; leftMargin: 10; verticalCenter: parent.verticalCenter;}
+            id:toolbarLabel; 
+            anchors {horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter;}
             text:menu_listView.currentItem.myData.name;
             font.pixelSize: toolbar.height/2;
             color:"white";

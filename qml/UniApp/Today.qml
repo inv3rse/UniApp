@@ -1,4 +1,6 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.1
+import QtQuick.Layouts 1.1
 
 Rectangle
 {
@@ -6,9 +8,30 @@ Rectangle
     color:"#ce8440"
     height:800;
     width:500;
+
+    Rectangle
+    {
+        id:selectDay;
+        anchors{left:parent.left; right:parent.right; top:parent.top;}
+        height:implicitHeight;
+
+        Button
+        {
+            anchors.left: parent.left;
+            text:"prev";
+        }
+
+        Button
+        {
+            anchors.right: parent.right;
+            text:"next";
+        }
+    }
+
     ListView
     {
-        anchors.fill:parent;
+//        anchors.fill:parent;
+        anchors{left:parent.left; right:parent.right; top:selectDay.bottom;}
         model: dataModel;
         delegate: Item
         {

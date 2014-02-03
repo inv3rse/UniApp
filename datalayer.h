@@ -6,6 +6,7 @@
 #include <QQmlContext>
 #include <QFile>
 
+#include "day.h"
 #include "stineclient.h"
 
 /**
@@ -44,7 +45,11 @@ public:
      */
     Q_INVOKABLE void setPassword(QString Pass);
 
-    QList<QObject*> getDataModel();
+    /**
+     * @brief Gibt eine Referenz auf die Daten zurück
+     * @return
+     */
+    QList<QObject*>& getDataModel();
 
 signals:
 
@@ -54,7 +59,7 @@ public slots:
      * @brief übernimmt und Speichert die übergebenen Daten
      * @param Data
      */
-    void setDataModel(QList<QObject*> Data);
+    void setDataModel(Day* currentDay);
 
     /**
      * @brief Speichert die aktuelle Session in der Datei
@@ -71,11 +76,13 @@ public slots:
      * @brief Reagiert auf fehlerhaften login Versuch
      */
     void loginFailed();
+
 private:
     bool saveUserToFile();
     bool saveDataToFile();
 
     StineClient     _webClient{};
+    Day             _currentDay;
     QList<QObject*> _dataModel;
     QQmlContext*    _context;
 

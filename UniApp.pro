@@ -11,9 +11,10 @@ QT += network
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     stineclient.cpp \
-    stinedata.cpp \
     datalayer.cpp \
-    log.cpp
+    log.cpp \
+    termin.cpp \
+    day.cpp
 
 # Installation path
 # target.path =
@@ -27,9 +28,10 @@ RESOURCES += \
 
 HEADERS += \
     stineclient.h \
-    stinedata.h \
     datalayer.h \
-    log.h
+    log.h \
+    termin.h \
+    day.h
 
 ANDROID_EXTRA_LIBS = ../../openssl-1.0.1f/libcrypto.so ../../openssl-1.0.1f/libssl.so
 

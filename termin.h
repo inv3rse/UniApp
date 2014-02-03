@@ -1,9 +1,10 @@
-#ifndef STINEDATA_H
-#define STINEDATA_H
+#ifndef TERMIN_H
+#define TERMIN_H
 
 #include <QObject>
+#include <QString>
 
-class StineData : public QObject
+class Termin : public QObject
 {
     Q_OBJECT
 
@@ -12,7 +13,10 @@ class StineData : public QObject
     Q_PROPERTY(QString Place READ getPlace WRITE setPlace NOTIFY PlaceChanged)
     Q_PROPERTY(QString InfoLink READ getInfoLink WRITE setInfoLink NOTIFY InfoLinkChanged)
 public:
-    explicit StineData(QString desc, QString time,QString place,QString link, QObject *parent = 0);
+    explicit Termin(QString desc, QString time,QString place,QString link, QObject *parent = 0);
+    explicit Termin(QObject *parent = 0);
+
+    Termin(const Termin& other);
 
     void setDescription(const QString & desc);
     void setTime(const QString & time);
@@ -23,6 +27,7 @@ public:
     QString getTime();
     QString getPlace();
     QString getInfoLink();
+
 signals:
     void DescriptionChanged();
     void TimeChanged();
