@@ -90,7 +90,7 @@ void StineClient::replyFinished(QNetworkReply *Reply)
 
     else if (_state == 2 )
     {
-        QRegularExpression re("<td class=\"appointment\".*\\n(.*span.*\\n)?(?<time>.*)\\n(.*span.*\\n)?(.*br.*\\n)?((?<place>.*)<br.*\\n)?.*href=\"(?<link>.*)\n(?<desc>.*)");
+        QRegularExpression re("<td class=\"appointment\".*\\n(.*span.*\\n)?(.*i>.*\\n)?(?<time>.*)\\n(.*i>.*\\n)?(.*span.*\\n)?(.*br.*\\n)?(.*i>.*\\n)?((?<place>.*)?<br.*\\n)?(.*\\n.*\\n)?.*href=\"(?<link>.*)\".*title=\"(?<desc>.*)\"");
 
         if (!re.isValid())
         {

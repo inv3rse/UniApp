@@ -31,7 +31,7 @@ Rectangle
     ListView
     {
 //        anchors.fill:parent;
-        anchors{left:parent.left; right:parent.right; top:selectDay.bottom;}
+        anchors{left:parent.left; right:parent.right; top:selectDay.bottom; bottom:parent.bottom;}
         model: dataModel;
         delegate: Item
         {
