@@ -9,6 +9,7 @@ DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
 {
     _context = cont;
     _currentDay = NULL;
+    _isPending = false;
 
     connect(&_webClient,SIGNAL(dataUpdated(Day*)),this,SLOT(setDataModel(Day*)));
     connect(&_webClient,SIGNAL(authRequiered()),this,SLOT(authenticate()));
@@ -22,6 +23,7 @@ DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
 
 void DataLayer::loadDataFromClient(int day)
 {
+    setPending(true);
     if (day > 0)
     {
         _webClient.setTerminUrl(_currentDay->getNextDay());
@@ -35,7 +37,6 @@ void DataLayer::loadDataFromClient(int day)
         _webClient.resetTerminUrl();
     }
     _webClient.getData();
-    emit reloadStateChanged();
 }
 
 
@@ -159,16 +160,17 @@ void DataLayer::setPassword(QString Pass)
     _password = Pass;
 }
 
-bool DataLayer::reloadActive()
+bool DataLayer::isPending()
 {
-    return _webClient.isbusy();
+    return _isPending;
 }
 
-void DataLayer::waitForReload(bool keepWaiting)
+void DataLayer::setPending(bool Pending)
 {
-    if (!keepWaiting)
+    if (_isPending != Pending)
     {
-        //TODO: stop and reset webclient
+        _isPending = Pending;
+        emit pendingChanged();
     }
 }
 
@@ -186,13 +188,12 @@ void DataLayer::authenticate()
 
 void DataLayer::loginFailed()
 {
-    emit reloadStateChanged();
+    setPending(false);
     //TODO: implementation
 }
 
 void DataLayer::setDataModel(Day* currentDay)
 {
-    emit reloadStateChanged();
     if (_currentDay != NULL)
     {
          _currentDay->deleteLater();
@@ -202,6 +203,7 @@ void DataLayer::setDataModel(Day* currentDay)
 
     saveDataToFile();
     _context->setContextProperty("dataModel",QVariant::fromValue(_dataModel));
+    setPending(false);
 }
 
 void DataLayer::saveSession(QString Session)

@@ -56,7 +56,7 @@ ApplicationWindow {
 
             RotationAnimation on rotation
             {
-                    running:DataLayer.reloadActive;
+                    running:DataLayer.isPending;
                     alwaysRunToEnd :true;
                     loops: Animation.Infinite;
                     from: 0;

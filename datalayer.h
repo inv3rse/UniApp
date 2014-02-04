@@ -16,7 +16,7 @@ class DataLayer : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(bool reloadActive READ reloadActive WRITE waitForReload NOTIFY reloadStateChanged)
+    Q_PROPERTY(bool isPending READ isPending WRITE setPending NOTIFY pendingChanged)
 public:
     explicit DataLayer(QQmlContext* cont, QObject *parent = 0);
 
@@ -28,12 +28,12 @@ public:
 
     QList<QObject *> getDataModel();
 
-    bool             reloadActive();
-    void             waitForReload(bool keepWaiting);
+    bool             isPending();
+    void             setPending(bool Pending);
 
 signals:
+    void             pendingChanged();
 
-    void             reloadStateChanged();
 public slots:
 
     /**
@@ -66,6 +66,8 @@ private:
     Day*            _currentDay;
     QList<QObject*> _dataModel;
     QQmlContext*    _context;
+
+    bool            _isPending;
 
     QString         _username;
     QString         _password;

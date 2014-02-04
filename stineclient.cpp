@@ -63,13 +63,13 @@ void StineClient::replyFinished(QNetworkReply *Reply)
     if (Reply->error()!=QNetworkReply::NoError)
     {
         Log::getInstance().writeLog(Reply->errorString()+"\n");
-        _state = 666;
+        _state = 0;
         _busy = false;
-        emit loginFailed();
+        emit networkerror();
         return;
     }
 
-    if (_state == 1 || _state == 3)
+    if (_state == 1 || _state == 3)     //State 1 means just get Session, State 3 will fetch Data afterwards
     {
         extractSession(Reply);
     }
@@ -102,7 +102,7 @@ void StineClient::extractSession(QNetworkReply *Reply)
         Log::getInstance().writeLog("Check Username and Password\n");
         _terminUrl = TERMINURL;
         _state = 0;
-
+        _busy = false;
         emit loginFailed();
 
         return;

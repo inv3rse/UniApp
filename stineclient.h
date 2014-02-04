@@ -49,6 +49,7 @@ signals:
     void                gotSession(QString Session);
     void                authRequiered();
     void                loginFailed();
+    void                networkerror();
 
 public slots:
     void                replyFinished(QNetworkReply *Reply);
