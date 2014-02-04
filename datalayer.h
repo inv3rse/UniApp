@@ -15,44 +15,25 @@
 class DataLayer : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool reloadActive READ reloadActive WRITE waitForReload NOTIFY reloadStateChanged)
 public:
     explicit DataLayer(QQmlContext* cont, QObject *parent = 0);
 
-    /**
-      * @brief lädt Benutzerdaten zum Einloggen aus der Datei
-      */
     Q_INVOKABLE void loadUserFromFile();
-
-    /**
-      * @brief lädt Daten in Form von Terminen aus der Datei
-      */
     Q_INVOKABLE void loadDataFromFile();
-
-    /**
-      * @brief lädt die aktuellen Daten von Stine herunter
-      */
     Q_INVOKABLE void loadDataFromClient(int day = 0);
-
-    /**
-      * @brief setzt den Username der zum login verwendet wird
-      * @param User Benutzername
-      */
     Q_INVOKABLE void setUsername(QString User);
-
-    /**
-     * @brief setzt das Passwort das zum login verwendet wird
-     * @param Pass
-     */
     Q_INVOKABLE void setPassword(QString Pass);
 
-    /**
-     * @brief Gibt eine Referenz auf die Daten zurück
-     * @return
-     */
     QList<QObject *> getDataModel();
+
+    bool             reloadActive();
+    void             waitForReload(bool keepWaiting);
 
 signals:
 
+    void             reloadStateChanged();
 public slots:
 
     /**

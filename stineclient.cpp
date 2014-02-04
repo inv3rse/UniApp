@@ -10,25 +10,30 @@ StineClient::StineClient(QObject *parent) :
     QObject(parent)
 {
     _session="";
+    _busy = false;
     _terminUrl=TERMINURL;
     connect(&_networkManager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
 }
 void StineClient::getData()
 {
-    if (_session != "")
+    if (!_busy)
     {
-        _state = 2;
-        QString tmp = _terminUrl;
-        QString url = TARGETURL + tmp.replace("<ID>",_session);
-        Log::getInstance().writeLog("req: "+url+"\n");
-        QNetworkRequest Request{QUrl(url)};
-        _networkManager.get(Request);
-        Log::getInstance().writeLog("Data Reqest send\n");
-    }
-    else
-    {
-        _state = 3;
-        getSession();
+        _busy = true;
+        if (_session != "")
+        {
+            _state = 2;
+            QString tmp = _terminUrl;
+            QString url = TARGETURL + tmp.replace("<ID>",_session);
+            Log::getInstance().writeLog("req: "+url+"\n");
+            QNetworkRequest Request{QUrl(url)};
+            _networkManager.get(Request);
+            Log::getInstance().writeLog("Data Reqest send\n");
+        }
+        else
+        {
+            _state = 3;
+            getSession();
+        }
     }
 }
 
@@ -38,6 +43,7 @@ void StineClient::getSession(QString Username, QString Password)
     if (Username != "" && Password != "")
     {
         _state =_state !=3? 1:3;
+        _busy = true;
         QNetworkRequest Request{QUrl(TARGETURL)};
         QByteArray Data;
         Data.append("usrname=").append(Username).append("&").append("pass=").append(Password).append(LOGINPARAMS);
@@ -47,6 +53,30 @@ void StineClient::getSession(QString Username, QString Password)
     else
     {
         emit authRequiered();
+    }
+}
+
+
+void StineClient::replyFinished(QNetworkReply *Reply)
+{
+    Reply->deleteLater();
+    if (Reply->error()!=QNetworkReply::NoError)
+    {
+        Log::getInstance().writeLog(Reply->errorString()+"\n");
+        _state = 666;
+        _busy = false;
+        emit loginFailed();
+        return;
+    }
+
+    if (_state == 1 || _state == 3)
+    {
+        extractSession(Reply);
+    }
+
+    else if (_state == 2 )
+    {
+        extractData(Reply);
     }
 }
 
@@ -81,6 +111,7 @@ void StineClient::extractSession(QNetworkReply *Reply)
     if (_state != 3)
     {
         _state = 0;
+        _busy = false;
     }
     else
     {
@@ -152,33 +183,14 @@ void StineClient::extractData(QNetworkReply *Reply)
         Log::getInstance().writeLog("--------\n");
     }
     emit dataUpdated(new Day(data,next,before));
+    _busy = false;
 }
 
 
-
-
-void StineClient::replyFinished(QNetworkReply *Reply)
+bool StineClient::isbusy()
 {
-    Reply->deleteLater();
-    if (Reply->error()!=QNetworkReply::NoError)
-    {
-        Log::getInstance().writeLog(Reply->errorString()+"\n");
-        _state = 666;
-        return;
-    }
-
-    if (_state == 1 || _state == 3)
-    {
-        extractSession(Reply);
-    }
-
-    else if (_state == 2 )
-    {
-        extractData(Reply);
-    }
+    return _busy;
 }
-
-
 
 void StineClient::setTerminUrl(QString terminUrl)
 {

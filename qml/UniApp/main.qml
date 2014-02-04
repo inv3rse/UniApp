@@ -54,6 +54,15 @@ ApplicationWindow {
             width: height;
             source: "/img/refresh.png";
 
+            RotationAnimation on rotation
+            {
+                    running:DataLayer.reloadActive;
+                    alwaysRunToEnd :true;
+                    loops: Animation.Infinite;
+                    from: 0;
+                    to: 360;
+            }
+
             MouseArea
             {
                 anchors.fill: parent;

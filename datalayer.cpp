@@ -13,6 +13,7 @@ DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
     connect(&_webClient,SIGNAL(dataUpdated(Day*)),this,SLOT(setDataModel(Day*)));
     connect(&_webClient,SIGNAL(authRequiered()),this,SLOT(authenticate()));
     connect(&_webClient,SIGNAL(gotSession(QString)),this,SLOT(saveSession(QString)));
+    connect(&_webClient,SIGNAL(loginFailed()),this,SLOT(loginFailed()));
 
     loadUserFromFile();
     loadDataFromFile();
@@ -34,6 +35,7 @@ void DataLayer::loadDataFromClient(int day)
         _webClient.resetTerminUrl();
     }
     _webClient.getData();
+    emit reloadStateChanged();
 }
 
 
@@ -157,6 +159,18 @@ void DataLayer::setPassword(QString Pass)
     _password = Pass;
 }
 
+bool DataLayer::reloadActive()
+{
+    return _webClient.isbusy();
+}
+
+void DataLayer::waitForReload(bool keepWaiting)
+{
+    if (!keepWaiting)
+    {
+        //TODO: stop and reset webclient
+    }
+}
 
 
 //--------------------SLOTS---------------------------
@@ -172,11 +186,13 @@ void DataLayer::authenticate()
 
 void DataLayer::loginFailed()
 {
+    emit reloadStateChanged();
     //TODO: implementation
 }
 
 void DataLayer::setDataModel(Day* currentDay)
 {
+    emit reloadStateChanged();
     if (_currentDay != NULL)
     {
          _currentDay->deleteLater();

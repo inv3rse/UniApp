@@ -42,6 +42,8 @@ public:
 
     void                authenticate(QString Username, QString Password);
 
+    bool                isbusy();
+
 signals:
     void                dataUpdated(Day* selectedDay);
     void                gotSession(QString Session);
@@ -59,6 +61,7 @@ private:
 
     QString               _session;
     int                   _state{0};
+    bool                  _busy;
     QString               _terminUrl;
     QNetworkAccessManager _networkManager;
 
