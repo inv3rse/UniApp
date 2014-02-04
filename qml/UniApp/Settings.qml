@@ -7,10 +7,9 @@ Rectangle {
     color:"red";
 
     Column {
-        id: someId;
         width: implicitWidth;
         height: implicitHeight;
-        anchors {top: parent.top; topMargin: 20; horizontalCenter: parent.horizontalCenter;}
+        anchors {verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter;}
         spacing: 50;
 
         TextField {
@@ -37,11 +36,5 @@ Rectangle {
                 DataLayer.loadDataFromClient();
             }
         }
-    }
-
-    TextArea {
-        text: log.Log;
-        anchors {left: settingsWindow.left; right: settingsWindow.right; bottom: settingsWindow.bottom; top: someId.bottom; topMargin: 50;}
-        readOnly: true;
     }
 }

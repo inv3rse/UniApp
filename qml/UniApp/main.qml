@@ -145,6 +145,11 @@ ApplicationWindow {
                 name: "Einstellungen"
                 fileName: "Settings.qml"
             }
+            ListElement
+            {
+                name: "Log";
+                fileName: "Log.qml"
+            }
         }
     }
 //-----------------------end side menu-----------------------
