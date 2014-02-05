@@ -129,7 +129,7 @@ void StineClient::extractData(QNetworkReply *Reply)
 
     QByteArray htmlData = Reply->readAll();
 
-    if (htmlData.contains("Zugang verweigert"))
+    if (htmlData.contains("Zugang verweigert") || htmlData.contains("<h1>Timeout!</h1>"))
     {
         Log::getInstance().writeLog("Session invalid, Access denied\n");
         Log::getInstance().writeLog("Updating Session...\n");
