@@ -184,6 +184,11 @@ void DataLayer::authenticate()
         Log::getInstance().writeLog("authenticating...\n");
         _webClient.authenticate(_username,_password);
     }
+    else
+    {
+        Log::getInstance().writeLog("authenticating failed\n");
+        loginFailed();
+    }
 }
 
 void DataLayer::loginFailed()

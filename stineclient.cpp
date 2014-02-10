@@ -52,6 +52,7 @@ void StineClient::getSession(QString Username, QString Password)
     }
     else
     {
+        _busy = false;
         emit authRequiered();
     }
 }
