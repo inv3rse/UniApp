@@ -59,9 +59,11 @@ private:
     void                extractSession(QNetworkReply *Reply);
     void                extractData(QNetworkReply *Reply);
 
+    enum                  States{READY,GET_SESSION,GET_DATA,GET_SESSION_AND_DATA};
+
+    States                _state;
 
     QString               _session;
-    int                   _state{0};
     bool                  _busy;
     QString               _terminUrl;
     QNetworkAccessManager _networkManager;
@@ -70,6 +72,8 @@ private:
     static const QString    TERMINURL;
     static const QString    LOGINPARAMS;
     static const QRegularExpression DATAEXPRESSION;
+
+
 };
 
 #endif // STINECLIENT_H

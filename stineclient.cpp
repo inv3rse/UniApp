@@ -21,7 +21,7 @@ void StineClient::getData()
         _busy = true;
         if (_session != "")
         {
-            _state = 2;
+            _state = GET_DATA;
             QString tmp = _terminUrl;
             QString url = TARGETURL + tmp.replace("<ID>",_session);
             Log::getInstance().writeLog("req: "+url+"\n");
@@ -31,7 +31,7 @@ void StineClient::getData()
         }
         else
         {
-            _state = 3;
+            _state = GET_SESSION_AND_DATA;
             getSession();
         }
     }
@@ -42,7 +42,7 @@ void StineClient::getSession(QString Username, QString Password)
 {
     if (Username != "" && Password != "")
     {
-        _state =_state !=3? 1:3;
+        _state =_state !=GET_SESSION_AND_DATA? GET_SESSION:GET_SESSION_AND_DATA;
         _busy = true;
         QNetworkRequest Request{QUrl(TARGETURL)};
         QByteArray Data;
@@ -64,7 +64,7 @@ void StineClient::replyFinished(QNetworkReply *Reply)
     if (Reply->error()!=QNetworkReply::NoError)
     {
         Log::getInstance().writeLog(Reply->errorString()+"\n");
-        _state = 0;
+        _state = READY;
         _busy = false;
         emit networkerror();
         return;
@@ -102,16 +102,16 @@ void StineClient::extractSession(QNetworkReply *Reply)
         Log::getInstance().writeLog("login not successfull");
         Log::getInstance().writeLog("Check Username and Password\n");
         _terminUrl = TERMINURL;
-        _state = 0;
+        _state = READY;
         _busy = false;
         emit loginFailed();
 
         return;
     }
 
-    if (_state != 3)
+    if (_state != GET_SESSION_AND_DATA)
     {
-        _state = 0;
+        _state = READY;
         _busy = false;
     }
     else
@@ -134,7 +134,7 @@ void StineClient::extractData(QNetworkReply *Reply)
     {
         Log::getInstance().writeLog("Session invalid, Access denied\n");
         Log::getInstance().writeLog("Updating Session...\n");
-        _state = 3;
+        _state = GET_SESSION_AND_DATA;
         getSession();
     }
 
