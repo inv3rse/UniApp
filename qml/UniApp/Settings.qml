@@ -33,7 +33,7 @@ Rectangle {
             onClicked: {
                 DataLayer.setUsername(username.text);
                 DataLayer.setPassword(password.text);
-                DataLayer.loadDataFromClient();
+                DataLayer.loadDataFromClient(0);
             }
         }
     }

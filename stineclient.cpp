@@ -2,7 +2,7 @@
 
 const QString StineClient::TARGETURL                    = "https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll";
 const QString StineClient::TERMINURL                    = "?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000";
-const QString StineClient::LOGINPARAMS                  = "&APPNAME=CampusNet&PRGNAME=LOGINCHECK&ARGUMENTS=clino%2Cusrname%2Cpass%2Cmenuno%2Cmenu_type%2Cbrowser%2Cplatform&clino=000000000000000&menuno=000000&menu_type=classic&browser=&platform=";
+const QString StineClient::LOGINPARAMS                  = "&APPNAME=CampusNet&PRGNAME=LOGINCHECK&ARGUMENTS=clino%2Cusrname%2Cpass%2Cmenuno%2Cmenu_type%2Cbrowser%2Cplatform&clino=000000000000001&menuno=000265&menu_type=classic&browser=&platform=";
 const QRegularExpression StineClient::DATAEXPRESSION    {"<td class=\"appointment\".*\\n(.*span.*\\n)?(.*i>.*\\n)?(?<time>.*)\\n(.*i>.*\\n)?(.*span.*\\n)?(.*br.*\\n)?(.*i>.*\\n)?((?<place>.*)?<br.*\\n)?(.*\\n.*\\n)?.*href=\"(?<link>.*)\".*title=\"(?<desc>.*)\""};
 
 
@@ -48,6 +48,7 @@ void StineClient::getSession(QString Username, QString Password)
         QByteArray Data;
         Data.append("usrname=").append(Username).append("&").append("pass=").append(Password).append(LOGINPARAMS);
         _networkManager.post(Request,Data);
+        Log::getInstance().writeLog(Data+"\n");
         Log::getInstance().writeLog("Session Reqest send\n");
     }
     else
@@ -70,12 +71,12 @@ void StineClient::replyFinished(QNetworkReply *Reply)
         return;
     }
 
-    if (_state == 1 || _state == 3)     //State 1 means just get Session, State 3 will fetch Data afterwards
+    if (_state == GET_SESSION || _state == GET_SESSION_AND_DATA)
     {
         extractSession(Reply);
     }
 
-    else if (_state == 2 )
+    else if (_state == GET_DATA )
     {
         extractData(Reply);
     }
@@ -101,6 +102,12 @@ void StineClient::extractSession(QNetworkReply *Reply)
     {
         Log::getInstance().writeLog("login not successfull");
         Log::getInstance().writeLog("Check Username and Password\n");
+
+        for (auto pair : Reply->rawHeaderPairs())
+        {
+            Log::getInstance().writeLog(pair.first+" : "+pair.second+"\n");
+        }
+
         _terminUrl = TERMINURL;
         _state = READY;
         _busy = false;
