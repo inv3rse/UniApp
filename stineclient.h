@@ -6,6 +6,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
+#include <QNetworkCookieJar>
 #include <QAuthenticator>
 #include <QUrl>
 #include <QByteArray>
@@ -42,8 +43,6 @@ public:
 
     void                authenticate(QString Username, QString Password);
 
-    bool                isbusy();
-
 signals:
     void                dataUpdated(Day* selectedDay);
     void                gotSession(QString Session);
@@ -58,16 +57,17 @@ private:
 
     void                extractSession(QNetworkReply *Reply);
     void                extractData(QNetworkReply *Reply);
+    void                checkCookie(QNetworkReply *Reply);
 
-    enum                  States{READY,GET_SESSION,GET_DATA,GET_SESSION_AND_DATA};
+    enum                  States{READY,GET_COOKIE,GET_SESSION,GET_DATA,GET_SESSION_AND_DATA};
 
     States                _state;
 
     QString               _session;
-    bool                  _busy;
     QString               _terminUrl;
     QNetworkAccessManager _networkManager;
 
+    static const QString    COOKIEURL;
     static const QString    TARGETURL;
     static const QString    TERMINURL;
     static const QString    LOGINPARAMS;

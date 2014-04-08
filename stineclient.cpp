@@ -1,5 +1,6 @@
 #include "stineclient.h"
 
+const QString StineClient::COOKIEURL                    = "https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000001,-N000265,-Astartseite";
 const QString StineClient::TARGETURL                    = "https://www.stine.uni-hamburg.de/scripts/mgrqispi.dll";
 const QString StineClient::TERMINURL                    = "?APPNAME=CampusNet&PRGNAME=SCHEDULER&ARGUMENTS=<ID>,-N000267,-A,-A,-N,-N000000000000000";
 const QString StineClient::LOGINPARAMS                  = "&APPNAME=CampusNet&PRGNAME=LOGINCHECK&ARGUMENTS=clino%2Cusrname%2Cpass%2Cmenuno%2Cmenu_type%2Cbrowser%2Cplatform&clino=000000000000001&menuno=000265&menu_type=classic&browser=&platform=";
@@ -10,31 +11,32 @@ StineClient::StineClient(QObject *parent) :
     QObject(parent)
 {
     _session="";
-    _busy = false;
     _terminUrl=TERMINURL;
+    _networkManager.setCookieJar(new QNetworkCookieJar());
     connect(&_networkManager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
+
+
+    QNetworkRequest Request{QUrl(COOKIEURL)};
+    _networkManager.get(Request);
+
 }
 void StineClient::getData()
 {
-    if (!_busy)
+    if (_session != "")
     {
-        _busy = true;
-        if (_session != "")
-        {
-            _state = GET_DATA;
-            QString tmp = _terminUrl;
-            QString url = TARGETURL + tmp.replace("<ID>",_session);
-            Log::getInstance().writeLog("req: "+url+"\n");
-            QNetworkRequest Request{QUrl(url)};
-            _networkManager.get(Request);
-            Log::getInstance().writeLog("Data Reqest send\n");
-        }
-        else
-        {
-            _state = GET_SESSION_AND_DATA;
-            getSession();
-        }
+        _state = GET_DATA;
+        QString tmp = _terminUrl;
+        QString url = TARGETURL + tmp.replace("<ID>",_session);
+        Log::getInstance().writeLog("req: "+url+"\n");
+        QNetworkRequest Request{QUrl(url)};
+        _networkManager.get(Request);
+        Log::getInstance().writeLog("Data Reqest send\n");
     }
+    else
+    {
+        _state = GET_SESSION_AND_DATA;
+        getSession();
+        }
 }
 
 
@@ -43,17 +45,15 @@ void StineClient::getSession(QString Username, QString Password)
     if (Username != "" && Password != "")
     {
         _state =_state !=GET_SESSION_AND_DATA? GET_SESSION:GET_SESSION_AND_DATA;
-        _busy = true;
         QNetworkRequest Request{QUrl(TARGETURL)};
         QByteArray Data;
-        Data.append("usrname=").append(Username).append("&").append("pass=").append(Password).append(LOGINPARAMS);
+        //Data.append("usrname=").append(Username).append("&").append("pass=").append(Password).append(LOGINPARAMS);
+        Data.append("usrname=BAO5324&pass=5Fiander%3F&APPNAME=CampusNet&PRGNAME=LOGINCHECK&ARGUMENTS=clino%2Cusrname%2Cpass%2Cmenuno%2Cmenu_type%2Cbrowser%2Cplatform&clino=000000000000001&menuno=000265&menu_type=classic&browser=&platform=");
         _networkManager.post(Request,Data);
-        Log::getInstance().writeLog(Data+"\n");
         Log::getInstance().writeLog("Session Reqest send\n");
     }
     else
     {
-        _busy = false;
         emit authRequiered();
     }
 }
@@ -61,25 +61,46 @@ void StineClient::getSession(QString Username, QString Password)
 
 void StineClient::replyFinished(QNetworkReply *Reply)
 {
+
+    for (auto pair : Reply->rawHeaderPairs())
+    {
+        Log::getInstance().writeLog(pair.first+" : "+pair.second+"\n");
+    }
+
+    Log::getInstance().writeLog("---------------------------\n");
+
     Reply->deleteLater();
     if (Reply->error()!=QNetworkReply::NoError)
     {
         Log::getInstance().writeLog(Reply->errorString()+"\n");
         _state = READY;
-        _busy = false;
         emit networkerror();
+        return;
+    }
+
+    if (_state == GET_COOKIE)
+    {
+        checkCookie(Reply);
         return;
     }
 
     if (_state == GET_SESSION || _state == GET_SESSION_AND_DATA)
     {
         extractSession(Reply);
+        return;
     }
 
     else if (_state == GET_DATA )
     {
         extractData(Reply);
+        return;
     }
+}
+
+void StineClient::checkCookie(QNetworkReply *Reply)
+{
+    // TODO: check if cookie is set
+    _state = GET_SESSION;
 }
 
 
@@ -103,14 +124,8 @@ void StineClient::extractSession(QNetworkReply *Reply)
         Log::getInstance().writeLog("login not successfull");
         Log::getInstance().writeLog("Check Username and Password\n");
 
-        for (auto pair : Reply->rawHeaderPairs())
-        {
-            Log::getInstance().writeLog(pair.first+" : "+pair.second+"\n");
-        }
-
         _terminUrl = TERMINURL;
         _state = READY;
-        _busy = false;
         emit loginFailed();
 
         return;
@@ -119,7 +134,6 @@ void StineClient::extractSession(QNetworkReply *Reply)
     if (_state != GET_SESSION_AND_DATA)
     {
         _state = READY;
-        _busy = false;
     }
     else
     {
@@ -137,7 +151,7 @@ void StineClient::extractData(QNetworkReply *Reply)
 
     QByteArray htmlData = Reply->readAll();
 
-    if (htmlData.contains("Zugang verweigert") || htmlData.contains("<h1>Timeout!</h1>"))
+    if (htmlData.contains("Zugang verweigert") || htmlData.contains("<h1>Timeout!</h1>") || htmlData.contains("verhindern das Speichern von Cookies"))
     {
         Log::getInstance().writeLog("Session invalid, Access denied\n");
         Log::getInstance().writeLog("Updating Session...\n");
@@ -191,13 +205,6 @@ void StineClient::extractData(QNetworkReply *Reply)
         Log::getInstance().writeLog("--------\n");
     }
     emit dataUpdated(new Day(data,next,before));
-    _busy = false;
-}
-
-
-bool StineClient::isbusy()
-{
-    return _busy;
 }
 
 void StineClient::setTerminUrl(QString terminUrl)
