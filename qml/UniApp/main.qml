@@ -56,7 +56,7 @@ ApplicationWindow {
 
             RotationAnimation on rotation
             {
-                    running:DataLayer.isPending;
+                    running:DataLayer.isPending && !DataLayer.authRequired;
                     alwaysRunToEnd :true;
                     loops: Animation.Infinite;
                     from: 0;
@@ -143,7 +143,7 @@ ApplicationWindow {
             ListElement
             {
                 name: "Einstellungen"
-                fileName: "Settings.qml"
+                fileName: "Login.qml"
             }
             ListElement
             {

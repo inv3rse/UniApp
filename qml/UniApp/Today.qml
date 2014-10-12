@@ -34,12 +34,11 @@ Rectangle
 
     ListView
     {
-//        anchors.fill:parent;
+        //        anchors.fill:parent;
         anchors{left:parent.left; right:parent.right; top:parent.top; bottom:selectDay.top;}
-        model: dataModel;
-        delegate: Item
-        {
-            id: terminEntry
+        model: DataLayer.dataModel;
+        delegate: Item {
+            id: terminEntry;
             width: parent.width
             height:200
 
@@ -72,4 +71,12 @@ Rectangle
             }
         }
     }
+
+    Login
+    {
+        id: login;
+        anchors.fill: parent;
+        visible: DataLayer.authRequired;
+    }
+
 }

@@ -38,6 +38,7 @@ ANDROID_EXTRA_LIBS = ../../openssl-1.0.1f/libcrypto.so ../../openssl-1.0.1f/libs
 OTHER_FILES += \
     android/libs/armeabi-v7a/libcrypto.so \
     android/libs/armeabi-v7a/libssl.so \
-    qml/UniApp/Today.qml
+    qml/UniApp/Today.qml \
+    qml/UniApp/Login.qml
 
 CONFIG += c++11

@@ -10,13 +10,12 @@ DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
     _context = cont;
     _currentDay = NULL;
     _isPending = false;
+    _authRequired = false;
 
     connect(&_webClient,SIGNAL(dataUpdated(Day*)),this,SLOT(setDataModel(Day*)));
-    connect(&_webClient,SIGNAL(authRequiered()),this,SLOT(authenticate()));
-    connect(&_webClient,SIGNAL(gotSession(QString)),this,SLOT(saveSession(QString)));
-    connect(&_webClient,SIGNAL(loginFailed()),this,SLOT(loginFailed()));
+    connect(&_webClient,SIGNAL(authRequiered()),this,SLOT(authenticationRequired()));
+    connect(&_webClient,SIGNAL(loginFailed()),this,SLOT(authenticationRequired()));
 
-    loadUserFromFile();
     loadDataFromFile();
 }
 
@@ -109,55 +108,34 @@ void DataLayer::loadDataFromFile()
 }
 
 
-bool DataLayer::saveUserToFile()
-{
-    QFile file(_USERFILE);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return false;
-
-    QByteArray writeData;
-
-    writeData.append(_username).append("\t").append(_password).append("\t").append(_session).append("\n");
-
-    int length = file.write(writeData);
-    file.close();
-
-    return length == -1? false:true;
-}
-
-void DataLayer::loadUserFromFile()
-{
-
-    QFile file(_USERFILE);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-
-    QByteArray line = file.readLine();
-    file.close();
-    QList<QByteArray> data = line.split('\t');
-
-    if (data.size()>=3)
-    {
-        _username = QString(data.at(0));
-        _password = QString(data.at(1));
-        _session  = QString(data.at(2));
-        _webClient.setSession(_session);
-    }
-}
-
 QList<QObject *> DataLayer::getDataModel()
 {
     return _dataModel;
 }
 
-void DataLayer::setUsername(QString User)
+void DataLayer::setUserAndPassword(QString username, QString password, bool save)
 {
-    _username = User;
+    if (_authRequired)
+    {
+        Log::getInstance().writeLog("authenticating...\n");
+        _authRequired = false;
+        emit authRequiredChanged();
+        _webClient.authenticate(username, password, save);
+    }
+    else
+    {
+        _webClient.setUserAndPassword(username, password, save);
+    }
 }
 
-void DataLayer::setPassword(QString Pass)
+QString DataLayer::getUsername()
 {
-    _password = Pass;
+    return _webClient.getUsername();
+}
+
+bool DataLayer::authRequired()
+{
+    return _authRequired;
 }
 
 bool DataLayer::isPending()
@@ -174,27 +152,23 @@ void DataLayer::setPending(bool Pending)
     }
 }
 
+void DataLayer::abortLogin()
+{
+    setPending(false);
+    _authRequired = false;
+    emit authRequiredChanged();
+}
+
 
 //--------------------SLOTS---------------------------
 
-void DataLayer::authenticate()
+void DataLayer::authenticationRequired()
 {
-    if (_username!="" && _password!="")
+    if (!_authRequired)
     {
-        Log::getInstance().writeLog("authenticating...\n");
-        _webClient.authenticate(_username,_password);
+        _authRequired = true;
+        emit authRequiredChanged();
     }
-    else
-    {
-        Log::getInstance().writeLog("authenticating failed\n");
-        loginFailed();
-    }
-}
-
-void DataLayer::loginFailed()
-{
-    setPending(false);
-    //TODO: implementation
 }
 
 void DataLayer::setDataModel(Day* currentDay)
@@ -205,14 +179,8 @@ void DataLayer::setDataModel(Day* currentDay)
     }
     _currentDay = currentDay;
     _dataModel  = _currentDay->getAppointments();
+    emit dataModelChanged();
 
     saveDataToFile();
-    _context->setContextProperty("dataModel",QVariant::fromValue(_dataModel));
     setPending(false);
-}
-
-void DataLayer::saveSession(QString Session)
-{
-    _session = Session;
-    saveUserToFile();
 }

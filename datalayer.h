@@ -17,22 +17,27 @@ class DataLayer : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool isPending READ isPending WRITE setPending NOTIFY pendingChanged)
+    Q_PROPERTY(bool authRequired READ authRequired NOTIFY authRequiredChanged)
+    Q_PROPERTY(QList<QObject*> dataModel READ getDataModel NOTIFY dataModelChanged)
 public:
     explicit DataLayer(QQmlContext* cont, QObject *parent = 0);
 
-    Q_INVOKABLE void loadUserFromFile();
+    Q_INVOKABLE QString getUsername();
     Q_INVOKABLE void loadDataFromFile();
     Q_INVOKABLE void loadDataFromClient(int day = 0);
-    Q_INVOKABLE void setUsername(QString User);
-    Q_INVOKABLE void setPassword(QString Pass);
+    Q_INVOKABLE void setUserAndPassword(QString username, QString password, bool save = false);
+    Q_INVOKABLE void abortLogin();
 
     QList<QObject *> getDataModel();
 
     bool             isPending();
+    bool             authRequired();
     void             setPending(bool Pending);
 
 signals:
     void             pendingChanged();
+    void             dataModelChanged();
+    void             authRequiredChanged();
 
 public slots:
 
@@ -42,24 +47,10 @@ public slots:
      */
     void setDataModel(Day* currentDay);
 
-    /**
-     * @brief Speichert die aktuelle Session in der Datei
-     * @param Session
-     */
-    void saveSession(QString Session);
-
-    /**
-     * @brief Setzt Benutzername und Passwort zum Einloggen wenn benötigt
-     */
-    void authenticate();
-
-    /**
-     * @brief Reagiert auf fehlerhaften login Versuch
-     */
-    void loginFailed();
+private slots:
+    void authenticationRequired();
 
 private:
-    bool saveUserToFile();
     bool saveDataToFile();
 
     StineClient     _webClient{};
@@ -67,11 +58,8 @@ private:
     QList<QObject*> _dataModel;
     QQmlContext*    _context;
 
+    bool            _authRequired;
     bool            _isPending;
-
-    QString         _username;
-    QString         _password;
-    QString         _session;
 
     static const QString _USERFILE;
     static const QString _DATAFILE;

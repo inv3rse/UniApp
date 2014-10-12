@@ -12,6 +12,7 @@
 #include <QByteArray>
 #include <QList>
 #include <QSslError>
+#include <QSettings>
 
 #include <QRegularExpression>
 
@@ -31,21 +32,41 @@ public:
     void                getData();
 
     /**
-     * @brief if login is successful the signal gotSession is triggerd
+     * @brief Loggt sich mit den aktuellem Benutzernamen und Passwort ein.
+     * Stimmt der Benutzername oder das Passwort nicht wird das Signal
+     * authRequiered gesendet.
      * @param Username user to login
      * @param Password corresponding password
      */
-    void                getSession(QString Username = "", QString Password = "");
-
-    void                setSession(QString Session);
+    void                getSession();
     void                setTerminUrl(QString terminUrl);
     void                resetTerminUrl();
 
-    void                authenticate(QString Username, QString Password);
+    /**
+     * @brief nach Signal authRequiered aufrufen um login daten zu setzen und weiter zu machen.
+     * @param Username
+     * @param Password
+     * @param save
+     */
+    void                authenticate(QString Username, QString Password, bool save = false);
+
+    /**
+     * @brief setzt Benutzername und Passwort zum einloggen
+     * @param username Benutzername
+     * @param password Passwort
+     * @param save Login Daten speichern
+     */
+    void                setUserAndPassword(const QString& username, const QString& password, bool save = false);
+
+    /**
+     * @brief Gibt den aktuellen Benutzernamen zurück
+     * @return
+     */
+    QString             getUsername();
+
 
 signals:
     void                dataUpdated(Day* selectedDay);
-    void                gotSession(QString Session);
     void                authRequiered();
     void                loginFailed();
     void                networkerror();
@@ -57,23 +78,29 @@ private:
 
     void                extractSession(QNetworkReply *Reply);
     void                extractData(QNetworkReply *Reply);
+    void                getCookie();
     void                checkCookie(QNetworkReply *Reply);
 
-    enum                  States{READY,GET_COOKIE,GET_SESSION,GET_DATA,GET_SESSION_AND_DATA};
+    enum                  States{READY,GET_COOKIE,GET_SESSION,GET_DATA};
 
     States                _state;
 
+    bool                  _getData;
+    bool                  _hasCookie;
     QString               _session;
     QString               _terminUrl;
+    QString               _username;
+    QString               _password;
     QNetworkAccessManager _networkManager;
 
     static const QString    COOKIEURL;
     static const QString    TARGETURL;
     static const QString    TERMINURL;
     static const QString    LOGINPARAMS;
+    static const QString    USER_KEY;
+    static const QString    PASS_KEY;
+    static const QString    SESSION_KEY;
     static const QRegularExpression DATAEXPRESSION;
-
-
 };
 
 #endif // STINECLIENT_H

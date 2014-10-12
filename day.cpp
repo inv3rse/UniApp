@@ -16,11 +16,10 @@ Day::Day(QObject *parent) :
 
 Day::~Day()
 {
-    for (QObject* obj : _appointments)
+    while (!_appointments.isEmpty())
     {
-        delete obj;
+        _appointments.takeLast()->deleteLater();
     }
-    _appointments.clear();
 }
 
 

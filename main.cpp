@@ -8,6 +8,10 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setOrganizationName("1nv3rs3");
+    QCoreApplication::setOrganizationDomain("http://1nv3rs3.com/");
+    QCoreApplication::setApplicationName("Uni Client");
+
     Application app(argc, argv);
     QQmlApplicationEngine viewer;
 
@@ -15,7 +19,6 @@ int main(int argc, char *argv[])
 
     viewer.rootContext()->setContextProperty("DataLayer",&data);
     viewer.rootContext()->setContextProperty("log",&Log::getInstance());
-    viewer.rootContext()->setContextProperty("dataModel",QVariant::fromValue(data.getDataModel()));
     viewer.load(QUrl("qrc:/qml/UniApp/main.qml"));
 
 
