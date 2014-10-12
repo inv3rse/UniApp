@@ -72,6 +72,7 @@ void StineClient::getSession()
     {
         _state = GET_SESSION;
         QNetworkRequest request{QUrl(TARGETURL)};
+        request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/x-www-form-urlencoded"));
         QByteArray data;
         data.append("usrname=").append(_username).append("&").append("pass=").append(_password).append(LOGINPARAMS);
         _networkManager.post(request,data);
@@ -172,6 +173,7 @@ void StineClient::extractData(QNetworkReply *Reply)
     {
         Log::getInstance().writeLog("Session invalid, Access denied\n");
         Log::getInstance().writeLog("Updating Session...\n");
+        _hasCookie = false;
         _getData = true;
         getSession();
         return;
