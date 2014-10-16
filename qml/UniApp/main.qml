@@ -3,7 +3,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 
 ApplicationWindow {
-    id: applicationWindow1
+    id: mainWindow
     title: qsTr("Hello World")
     width: 480
     height: 720
@@ -28,7 +28,7 @@ ApplicationWindow {
     {
         id:toolbar
         anchors {top:parent.top; left: parent.left; right:parent.right;}
-        height:75
+        height:mainWindow.height/20
         color:"black";
 
         Image
@@ -95,7 +95,7 @@ ApplicationWindow {
                 property variant myData: model
 
                 height:120;
-                width:applicationWindow1.width/2;
+                width:mainWindow.width/2;
                 Text
                 {
                     id: menuText;
@@ -179,7 +179,7 @@ ApplicationWindow {
 
     function triggerMenu()
     {
-        show_menu.x=show_menu.x==0? applicationWindow1.width/2 : 0;
+        show_menu.x=show_menu.x==0? mainWindow.width/2 : 0;
     }
 
 }

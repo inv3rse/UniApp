@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QString>
-#include <QQmlContext>
 #include <QFile>
 
 #include "day.h"
@@ -20,7 +19,7 @@ class DataLayer : public QObject
     Q_PROPERTY(bool authRequired READ authRequired NOTIFY authRequiredChanged)
     Q_PROPERTY(QList<QObject*> dataModel READ getDataModel NOTIFY dataModelChanged)
 public:
-    explicit DataLayer(QQmlContext* cont, QObject *parent = 0);
+    explicit DataLayer(QObject *parent = 0);
 
     Q_INVOKABLE QString getUsername();
     Q_INVOKABLE void loadDataFromFile();
@@ -56,7 +55,6 @@ private:
     StineClient     _webClient{};
     Day*            _currentDay;
     QList<QObject*> _dataModel;
-    QQmlContext*    _context;
 
     bool            _authRequired;
     bool            _isPending;
