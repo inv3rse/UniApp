@@ -40,3 +40,8 @@ contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
         /home/dennis/Downloads/openssl-1.0.1i/libcrypto.so \
         /home/dennis/Downloads/openssl-1.0.1i/libssl.so
 }
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+OTHER_FILES += \
+    android/AndroidManifest.xml
