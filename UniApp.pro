@@ -33,12 +33,10 @@ HEADERS += \
     termin.h \
     day.h
 
-ANDROID_EXTRA_LIBS = ../../openssl-1.0.1f/libcrypto.so ../../openssl-1.0.1f/libssl.so
-
-OTHER_FILES += \
-    android/libs/armeabi-v7a/libcrypto.so \
-    android/libs/armeabi-v7a/libssl.so \
-    qml/UniApp/Today.qml \
-    qml/UniApp/Login.qml
-
 CONFIG += c++11
+
+contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+    ANDROID_EXTRA_LIBS = \
+        /home/dennis/Downloads/openssl-1.0.1i/libcrypto.so \
+        /home/dennis/Downloads/openssl-1.0.1i/libssl.so
+}
