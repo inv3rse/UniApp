@@ -4,10 +4,9 @@ const QString DataLayer::_USERFILE= "UserInfo";
 const QString DataLayer::_DATAFILE= "UserData";
 
 
-DataLayer::DataLayer(QQmlContext* cont, QObject *parent) :
+DataLayer::DataLayer(QObject *parent) :
     QObject(parent)
 {
-    _context = cont;
     _currentDay = NULL;
     _isPending = false;
     _authRequired = false;
@@ -58,7 +57,7 @@ bool DataLayer::saveDataToFile()
     int length = file.write(writeData);
     file.close();
 
-    return length == -1? false:true;
+    return length != -1;
 }
 
 void DataLayer::loadDataFromFile()
